@@ -3,14 +3,16 @@ import {
     PrimaryGeneratedColumn,
     Column,
     Unique,
-    CreateDateColumn,
-    UpdateDateColumn
+    OneToMany,
 } from "typeorm";
-import {Length, IsNotEmpty} from "class-validator";
+
+import {Length, IsPhoneNumber, IsEmail} from "class-validator";
 import * as bcrypt from "bcryptjs";
+import {Order} from "./Order";
+import {SuperOrder} from "./SuperOrder";
 
 @Entity()
-@Unique(["username"])
+@Unique(["username", "mail"])
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
@@ -20,20 +22,33 @@ export class User {
     username: string;
 
     @Column()
+    @Length(4, 20)
+    firstName: string;
+
+    @Column()
+    @Length(4, 20)
+    lastName: string;
+
+    @Column()
+    @IsEmail()
+    mail: string;
+
+    @Column()
     @Length(4, 100)
     password: string;
 
     @Column()
-    @IsNotEmpty()
-    role: string;
+    location: string;
 
     @Column()
-    @CreateDateColumn()
-    createdAt: Date;
+    @IsPhoneNumber(null)
+    phone: string;
 
-    @Column()
-    @UpdateDateColumn()
-    updatedAt: Date;
+    @OneToMany(type => Order, order => order.user)
+    orders: Order[];
+
+    @OneToMany(type => SuperOrder, superOrder => superOrder.user)
+    superOrders: SuperOrder[];
 
     hashPassword() {
         this.password = bcrypt.hashSync(this.password, 8);
