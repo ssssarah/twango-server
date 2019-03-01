@@ -1,10 +1,6 @@
 {
-   "type": "mysql",
-   "host": "localhost",
-   "port": 3306,
-   "username": "root",
-   "password": "sarah",
-   "database": "twango",
+   "type": "sqlite",
+   "database": "database.sqlite",
    "synchronize": true,
    "logging": false,
    "entities": [

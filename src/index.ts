@@ -7,9 +7,12 @@ import * as cors from "cors";
 import routes from "./routes";
 
 //Connects to the Database -> then starts the express
-createConnection().then(async connection => {
+createConnection()
+  .then(async connection => {
     // Create a new express application instance
     const app = express();
+
+    console.log("loading middleware");
 
     // Call midlewares
     app.use(cors());
@@ -17,10 +20,11 @@ createConnection().then(async connection => {
     app.use(bodyParser.json());
 
     //Set all routes from routes folder
+    console.log("set routes");
     app.use("/", routes);
 
     app.listen(3000, () => {
       console.log("Server started on port 3000!");
     });
   })
-  .catch(error => console.log(error));
+.catch(error => console.log(error));
