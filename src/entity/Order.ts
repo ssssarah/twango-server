@@ -4,7 +4,7 @@ import {Dispatch, SuperOrder} from "./SuperOrder";
 import {User} from "./User";
 import {OrderItem} from "./OrderItem";
 
-enum Status {
+export enum Status {
     ACCEPTED, PENDING, REFUSED
 }
 

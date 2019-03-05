@@ -5,11 +5,13 @@ import * as bodyParser from "body-parser";
 import * as helmet from "helmet";
 import * as cors from "cors";
 import routes from "./routes";
+import {MigrationExecutor} from "typeorm/migration/MigrationExecutor";
 
 //Connects to the Database -> then starts the express
-createConnection()
-  .then(async connection => {
-    // Create a new express application instance
+
+createConnection().then(async connection => {
+
+// Create a new express application instance
     const app = express();
 
     console.log("loading middleware");
