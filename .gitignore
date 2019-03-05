@@ -4,3 +4,5 @@ build/
 tmp/
 temp/
 *.iml
+ormconfig.json
+database.sqllite
