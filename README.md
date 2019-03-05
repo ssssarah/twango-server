@@ -8,7 +8,7 @@ Preprend any typeorm command with "npm run" (CF last line of scripts in package.
 
 > npm run typeorm migration:run
 
-> npm run typeorm migration:create -n <migration_name> 
+> typeorm migration:create -n <migration_name> 
 
 List of all doc pages
 https://github.com/typeorm/typeorm/tree/master/docs
