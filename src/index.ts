@@ -11,6 +11,8 @@ import {MigrationExecutor} from "typeorm/migration/MigrationExecutor";
 
 createConnection().then(async connection => {
 
+  console.log("Starting server program!");
+
 // Create a new express application instance
     const app = express();
 
