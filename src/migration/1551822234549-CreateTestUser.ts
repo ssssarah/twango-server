@@ -20,8 +20,7 @@ export class CreateTestUser1551822234549 implements MigrationInterface {
     user.location = faker.address.city();
     user.hashPassword();
     await userRepository.save(user);
-    
-    }
+        }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
 

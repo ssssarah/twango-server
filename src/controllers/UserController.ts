@@ -24,10 +24,17 @@ class UserController {
     };
 
     static newUser = async (req: Request, res: Response) => {
-        let {username, password} = req.body;
+        let {username, password,firstName,lastName,mail,phone,location} = req.body;
+        console.log("got a newuser request from"+username);
         let user = new User();
         user.username = username;
         user.password = password;
+        user.firstName=firstName;
+        user.lastName=lastName;
+        user.mail=mail;
+        user.phone=phone;
+        user.location=location;
+
 
         const errors = await validate(user);
         if (errors.length > 0) {

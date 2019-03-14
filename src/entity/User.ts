@@ -41,7 +41,7 @@ export class User {
     location: string;
 
     @Column()
-    @IsPhoneNumber(null)
+    // @IsPhoneNumber(null) needs country code to work 
     phone: string;
 
     @OneToMany(type => Order, order => order.user)

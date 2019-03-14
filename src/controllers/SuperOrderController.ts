@@ -10,7 +10,7 @@ class SuperOrderController {
         const id: number = req.params.id;
         const superOrderRepository = getRepository(SuperOrder);
         try {
-            const superOrder = await superOrderRepository.findOneOrFail(id, {select: ["id"]});
+            const superOrder = await superOrderRepository.findOneOrFail(id);
             res.send(superOrder);
         } catch (error) {
             res.status(404).send("Superorder not found");
@@ -18,12 +18,14 @@ class SuperOrderController {
     };
 
     static newSuperOrder = async (req: Request, res: Response) => {
+
         let { user, storeURL, storeLocation,deadline,arrivalLocation,availableDispatch} = req.body;
 
         let superOrder=new SuperOrder();
         superOrder.user=user;
         superOrder.storeURL=storeURL;
         superOrder.storeLocation=storeLocation;
+        superOrder.arrivalLocation=arrivalLocation;
         superOrder.deadline=deadline;
         superOrder.availableDispatch=availableDispatch;
 
@@ -31,7 +33,8 @@ class SuperOrderController {
 
         const errors = await validate(superOrder);
         if (errors.length > 0) {
-            res.status(400).send(errors);
+            console.log(errors);
+            res.status(400).json(errors);
             return;
         }
         try{
@@ -41,7 +44,8 @@ class SuperOrderController {
             res.status(409).send("couldn't create superorder");
             return;
         }
-        res.status(201).send("Superorder created");
+        console.log("superorder id is "+superOrder.id)
+        res.status(201).json({id:superOrder.id});
     };
 
     static editSuperOrder = async (req: Request, res: Response) => {
@@ -61,6 +65,7 @@ class SuperOrderController {
         superOrder.user=user;
         superOrder.storeURL=storeURL;
         superOrder.storeLocation=storeLocation;
+        superOrder.arrivalLocation=arrivalLocation;
         superOrder.deadline=deadline;
         superOrder.availableDispatch=availableDispatch;
 
