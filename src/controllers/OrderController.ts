@@ -1,0 +1,103 @@
+import {Request, Response} from "express";
+import {getRepository} from "typeorm";
+import {validate} from "class-validator";
+
+import {Order} from "../entity/Order";
+import {OrderItem} from "../entity/OrderItem";
+
+class OrderController {
+
+    // static getOneById = async (req: Request, res: Response) => {
+    //     const id: number = req.params.id;
+    //     const superOrderRepository = getRepository(SuperOrder);
+    //     try {
+    //         const superOrder = await superOrderRepository.findOneOrFail(id);
+    //         res.send(superOrder);
+    //     } catch (error) {
+    //         res.status(404).send("Superorder not found");
+    //     }
+    // };
+
+    static newOrder = async (req: Request, res: Response) => {
+
+        let { user, superOrderId, items} = req.body;
+
+        let order=new Order();
+     
+
+        const superOrderRepository = getRepository(SuperOrder);
+
+        const errors = await validate(superOrder);
+        if (errors.length > 0) {
+            console.log(errors);
+            res.status(400).json(errors);
+            return;
+        }
+        try{
+            await superOrderRepository.save(superOrder);
+        }
+        catch (e) {
+            res.status(409).send("couldn't create superorder");
+            return;
+        }
+        console.log("superorder id is "+superOrder.id)
+        res.status(201).json({id:superOrder.id});
+    };
+
+    static editSuperOrder = async (req: Request, res: Response) => {
+        let { user, storeURL, storeLocation,deadline,arrivalLocation,availableDispatch} = req.body;
+
+        let id=req.params.id;
+
+        const superOrderRepository=getRepository(SuperOrder);
+        let superOrder:SuperOrder;
+        try {
+            superOrder = await superOrderRepository.findOneOrFail(id);
+        } catch (error) {
+            res.status(404).send("Superorder not found");
+            return;
+        }
+
+        superOrder.user=user;
+        superOrder.storeURL=storeURL;
+        superOrder.storeLocation=storeLocation;
+        superOrder.arrivalLocation=arrivalLocation;
+        superOrder.deadline=deadline;
+        superOrder.availableDispatch=availableDispatch;
+
+        const errors = await validate(superOrder);
+        if (errors.length > 0) {
+            res.status(400).send(errors);
+            return;
+        }
+
+        try {
+            await superOrderRepository.save(superOrder);
+        } catch (e) {
+            res.status(409).send("Couldn't save superorder");
+            return;
+        }
+        //After all send a 204 (no content, but accepted) response
+        res.status(204).send();
+    };
+
+    static deleteSuperOrder = async (req: Request, res: Response) => {
+        const id = req.params.id;
+
+        const superOrderRepository = getRepository(SuperOrder);
+        let superOrder:SuperOrder;
+        try {
+            superOrder = await superOrderRepository.findOneOrFail(id);
+        } catch (error) {
+            res.status(404).send("User not found");
+            return;
+        }
+        superOrderRepository.delete(id);
+
+        //After all send a 204 (no content, but accepted) response
+        res.status(204).send();
+    };
+}
+
+export default OrderController;
+
