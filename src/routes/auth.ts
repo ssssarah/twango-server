@@ -7,7 +7,7 @@ const router = Router();
 router.post("/login", AuthController.login);
 
 //Register
-router.post("/register", [checkJwt], AuthController.register);
+router.post("/register", AuthController.register);
 
 //Change my password
 router.post("/change-password", [checkJwt], AuthController.changePassword);

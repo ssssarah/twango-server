@@ -1,6 +1,7 @@
 import { Router } from "express";
   import UserController from "../controllers/UserController";
   import { checkJwt } from "../middlewares/checkJwt";
+import { User } from "../entity/User";
 
   const router = Router();
 

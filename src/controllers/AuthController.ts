@@ -9,6 +9,8 @@ import config from "../config/config";
 class AuthController {
 
   static login = async (req: Request, res: Response) => {
+
+    console.log("got a login request from "+req.body.username);
     //Check if username and password are set
     let { username, password } = req.body;
     if (!(username && password)) {
@@ -21,16 +23,18 @@ class AuthController {
     try {
       user = await userRepository.findOneOrFail({ where: { username } });
     } catch (error) {
+      console.log("couldn't find user with that username/password combo");
       res.status(401).send();
     }
 
     //Check if encrypted password match
     if (!user.checkIfUnencryptedPasswordIsValid(password)) {
       res.status(401).send();
+      console.log("password invalid");
       return;
     }
 
-    //Sing JWT, valid for 1 hour
+    //Sign JWT, valid for 1 hour
     const token = jwt.sign(
       { userId: user.id, username: user.username },
       config.jwtSecret,
@@ -38,7 +42,7 @@ class AuthController {
     );
 
     //Send the jwt in the response
-    res.send(token);
+    res.json({jwt:token});
   };
 
   static changePassword = async (req: Request, res: Response) => {

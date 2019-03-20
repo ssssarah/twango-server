@@ -4,6 +4,7 @@ import {validate} from "class-validator";
 
 import {Order} from "../entity/Order";
 
+
 class OrderController { //TODO copy pasted this from superOrder, adapt it to order
 
 
@@ -26,23 +27,23 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
         let order = new Order();
         //TODO fields and possibly orderItems at the same time
 
-        const OrderRepository = getRepository(Order);
+        const orderRepository = getRepository(Order);
 
         const errors = await validate(order);
-
         if (errors.length > 0) {
-            res.status(400).send(errors);
+            console.log(errors);
+            res.status(400).json(errors);
             return;
         }
-
-        try {
-            await OrderRepository.save(order);
-        } catch (e) {
-            res.status(409).send("couldn't create Order");
+        try{
+            await orderRepository.save(order);
+        }
+        catch (e) {
+            res.status(409).send("couldn't create superorder");
             return;
         }
-
-        res.status(201).send("Order created");
+        console.log("Order id is "+ order.id)
+        res.status(201).json({id : order.id});
     };
 
     static editOrder = async (req: Request, res: Response) => {
@@ -62,42 +63,27 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
         }
 
         //TODO
-
-        const errors = await validate(order);
-        if (errors.length > 0) {
-            res.status(400).send(errors);
-            return;
-        }
-
-        try {
-            await OrderRepository.save(order);
-        } catch (e) {
-            res.status(409).send("Couldn't save Order");
-            return;
-        }
-        //After all send a 204 (no content, but accepted) response
-        res.status(204).send();
     };
 
     static deleteOrder = async (req: Request, res: Response) => {
         const id = req.params.id;
 
-        const OrderRepository = getRepository(Order);
+        const orderRepository = getRepository(Order);
         let order: Order;
 
         try {
-            order = await OrderRepository.findOneOrFail(id);
+            order = await orderRepository.findOneOrFail(id);
         } catch (error) {
             res.status(404).send("User not found");
             return;
         }
 
-        OrderRepository.delete(id);
+        orderRepository.delete(id);
 
         //After all send a 204 (no content, but accepted) response
         res.status(204).send();
     };
-}
+};
 
 export default OrderController;
 
