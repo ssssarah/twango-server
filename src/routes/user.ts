@@ -14,9 +14,6 @@ import { Router } from "express";
     UserController.getOneById
   );
 
-  //Create a new user
-  router.post("/", [checkJwt], UserController.newUser);
-
   //Edit one user
   router.patch(
     "/:id([0-9]+)",

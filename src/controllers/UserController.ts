@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import {getRepository} from "typeorm";
-import {validate} from "class-validator";
+import {Column, getRepository} from "typeorm";
+import {IsEmail, IsPhoneNumber, Length, validate} from "class-validator";
 
 import {User} from "../entity/User";
 
@@ -23,34 +23,10 @@ class UserController {
         }
     };
 
-    static newUser = async (req: Request, res: Response) => {
-        let {username, password} = req.body;
-        let user = new User();
-        user.username = username;
-        user.password = password;
-
-        const errors = await validate(user);
-        if (errors.length > 0) {
-            res.status(400).send(errors);
-            return;
-        }
-
-        user.hashPassword();
-
-        const userRepository = getRepository(User);
-        try {
-            await userRepository.save(user);
-        } catch (e) {
-            res.status(409).send("username already in use");
-            return;
-        }
-
-        res.status(201).send("User created");
-    };
-
     static editUser = async (req: Request, res: Response) => {
         const id = req.params.id;
-        const {username} = req.body;
+        const {username, firstName, lastName, mail, location, phone} = req.body; //todo send everything or only modified fields?
+
         const userRepository = getRepository(User);
 
         let user;
@@ -62,7 +38,14 @@ class UserController {
         }
 
         user.username = username;
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.mail = mail;
+        user.location = location;
+        user.phone = phone;
+
         const errors = await validate(user);
+
         if (errors.length > 0) {
             res.status(400).send(errors);
             return;
@@ -74,6 +57,7 @@ class UserController {
             res.status(409).send("username already in use");
             return;
         }
+
         //After all send a 204 (no content, but accepted) response
         res.status(204).send();
     };

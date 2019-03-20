@@ -41,6 +41,9 @@ export class SuperOrder {
     @Column()
     availableDispatch: Dispatch;
 
+    @Column()
+    storeName: string;
+
     @Column("simple-array")
     tags: string[];
 

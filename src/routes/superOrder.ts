@@ -1,30 +1,40 @@
-import { Router } from "express";
-  import SuperOrderController from "../controllers/SuperOrderController";
-  import { checkJwt } from "../middlewares/checkJwt";
+import {Router} from "express";
+import SuperOrderController from "../controllers/SuperOrderController";
+import {checkJwt} from "../middlewares/checkJwt";
 
-  const router = Router();
+const router = Router();
 
-  // Get one superOrder
-  router.get(
+// Get one superOrder
+router.get(
     "/:id([0-9]+)",
-    SuperOrderController.getOneById
-  );
+    SuperOrderController.getSuperOrder
+);
 
-  //Create a new superOrder
-  router.post("/", [checkJwt], SuperOrderController.newSuperOrder);
-
-  //Edit one superOrder
-  router.put(
-    "/:id([0-9]+)",
+//Create a new superOrder
+router.post(
+    "/",
     [checkJwt],
     SuperOrderController.newSuperOrder
-  );
+);
 
-  //Delete one user
-  router.delete(
+//Edit one superOrder
+router.put(
+    "/:id([0-9]+)",
+    [checkJwt],
+    SuperOrderController.editSuperOrder
+);
+
+//Delete one user
+router.delete(
     "/:id([0-9]+)",
     [checkJwt],
     SuperOrderController.deleteSuperOrder
-  );
+);
 
-  export default router;
+// Search SuperOrders
+router.get(
+    "/search",
+    SuperOrderController.search
+);
+
+export default router;

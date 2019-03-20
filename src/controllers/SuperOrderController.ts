@@ -6,7 +6,8 @@ import {SuperOrder} from "../entity/SuperOrder";
 
 class SuperOrderController {
 
-    static getOneById = async (req: Request, res: Response) => {
+    static getSuperOrder = async (req: Request, res: Response) => {
+
         const id: number = req.params.id;
         const superOrderRepository = getRepository(SuperOrder);
         try {
@@ -18,39 +19,43 @@ class SuperOrderController {
     };
 
     static newSuperOrder = async (req: Request, res: Response) => {
-        let { user, storeURL, storeLocation,deadline,arrivalLocation,availableDispatch} = req.body;
+        let {user, storeURL, storeLocation, deadline, arrivalLocation, availableDispatch} = req.body;
 
-        let superOrder=new SuperOrder();
-        superOrder.user=user;
-        superOrder.storeURL=storeURL;
-        superOrder.storeLocation=storeLocation;
-        superOrder.deadline=deadline;
-        superOrder.availableDispatch=availableDispatch;
+        let superOrder = new SuperOrder();
+        superOrder.user = user;
+        superOrder.storeURL = storeURL;
+        superOrder.storeLocation = storeLocation;
+        superOrder.deadline = deadline;
+        superOrder.availableDispatch = availableDispatch;
 
         const superOrderRepository = getRepository(SuperOrder);
 
         const errors = await validate(superOrder);
+
         if (errors.length > 0) {
             res.status(400).send(errors);
             return;
         }
-        try{
+
+        try {
             await superOrderRepository.save(superOrder);
-        }
-        catch (e) {
+        } catch (e) {
             res.status(409).send("couldn't create superorder");
             return;
         }
+
         res.status(201).send("Superorder created");
     };
 
     static editSuperOrder = async (req: Request, res: Response) => {
-        let { user, storeURL, storeLocation,deadline,arrivalLocation,availableDispatch} = req.body;
+        let {user, storeURL, storeLocation, deadline, arrivalLocation, availableDispatch} = req.body;
 
-        let id=req.params.id;
+        let id = req.params.id;
 
-        const superOrderRepository=getRepository(SuperOrder);
-        let superOrder:SuperOrder;
+        const superOrderRepository = getRepository(SuperOrder);
+
+        let superOrder: SuperOrder;
+
         try {
             superOrder = await superOrderRepository.findOneOrFail(id);
         } catch (error) {
@@ -58,11 +63,11 @@ class SuperOrderController {
             return;
         }
 
-        superOrder.user=user;
-        superOrder.storeURL=storeURL;
-        superOrder.storeLocation=storeLocation;
-        superOrder.deadline=deadline;
-        superOrder.availableDispatch=availableDispatch;
+        superOrder.user = user;
+        superOrder.storeURL = storeURL;
+        superOrder.storeLocation = storeLocation;
+        superOrder.deadline = deadline;
+        superOrder.availableDispatch = availableDispatch;
 
         const errors = await validate(superOrder);
         if (errors.length > 0) {
@@ -84,18 +89,33 @@ class SuperOrderController {
         const id = req.params.id;
 
         const superOrderRepository = getRepository(SuperOrder);
-        let superOrder:SuperOrder;
+        let superOrder: SuperOrder;
+
         try {
             superOrder = await superOrderRepository.findOneOrFail(id);
         } catch (error) {
             res.status(404).send("User not found");
             return;
         }
+
         superOrderRepository.delete(id);
 
         //After all send a 204 (no content, but accepted) response
         res.status(204).send();
     };
+
+
+    static search = async (req: Request, res: Response) => {
+        console.log(req.query);
+        let terms = req.query.terms;
+        let sort = req.query.sort;
+        let tags = req.query.tags;
+        let location = req.query.location;
+        let nResults = req.query.nResults;
+        let user = req.query.nResults;
+        res.status(404).send("not found");
+    };
+
 }
 
 export default SuperOrderController;

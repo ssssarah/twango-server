@@ -79,5 +79,36 @@ class AuthController {
 
     res.status(204).send();
   };
+
+
+  static register = async (req: Request, res: Response) => {
+    let {username, password, firstName, lastName, mail, location, phone} = req.body;
+    let user = new User();
+    user.username = username;
+    user.password = password;
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.mail = mail;
+    user.location = location;
+    user.phone = phone;
+
+    const errors = await validate(user);
+    if (errors.length > 0) {
+      res.status(400).send(errors);
+      return;
+    }
+
+    user.hashPassword();
+
+    const userRepository = getRepository(User);
+    try {
+      await userRepository.save(user);
+    } catch (e) {
+      res.status(409).send("username already in use");
+      return;
+    }
+
+    res.status(201).send("User created");
+  };
 }
 export default AuthController;
