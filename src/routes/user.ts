@@ -1,6 +1,7 @@
 import { Router } from "express";
   import UserController from "../controllers/UserController";
   import { checkJwt } from "../middlewares/checkJwt";
+import { User } from "../entity/User";
 
   const router = Router();
 
@@ -15,7 +16,10 @@ import { Router } from "express";
   );
 
   //Create a new user
-  router.post("/", [checkJwt], UserController.newUser);
+  // router.post("/", [checkJwt], UserController.newUser);
+
+  //removed checking jwt
+  router.post("/",UserController.newUser);
 
   //Edit one user
   router.patch(

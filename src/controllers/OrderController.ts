@@ -2,32 +2,28 @@ import {Request, Response} from "express";
 import {getRepository} from "typeorm";
 import {validate} from "class-validator";
 
-import {SuperOrder} from "../entity/SuperOrder";
+import {Order} from "../entity/Order";
+import {OrderItem} from "../entity/OrderItem";
 
-class SuperOrderController {
+class OrderController {
 
-    static getOneById = async (req: Request, res: Response) => {
-        const id: number = req.params.id;
-        const superOrderRepository = getRepository(SuperOrder);
-        try {
-            const superOrder = await superOrderRepository.findOneOrFail(id);
-            res.send(superOrder);
-        } catch (error) {
-            res.status(404).send("Superorder not found");
-        }
-    };
+    // static getOneById = async (req: Request, res: Response) => {
+    //     const id: number = req.params.id;
+    //     const superOrderRepository = getRepository(SuperOrder);
+    //     try {
+    //         const superOrder = await superOrderRepository.findOneOrFail(id);
+    //         res.send(superOrder);
+    //     } catch (error) {
+    //         res.status(404).send("Superorder not found");
+    //     }
+    // };
 
-    static newSuperOrder = async (req: Request, res: Response) => {
+    static newOrder = async (req: Request, res: Response) => {
 
-        let { user, storeURL, storeLocation,deadline,arrivalLocation,availableDispatch} = req.body;
+        let { user, superOrderId, items} = req.body;
 
-        let superOrder=new SuperOrder();
-        superOrder.user=user;
-        superOrder.storeURL=storeURL;
-        superOrder.storeLocation=storeLocation;
-        superOrder.arrivalLocation=arrivalLocation;
-        superOrder.deadline=deadline;
-        superOrder.availableDispatch=availableDispatch;
+        let order=new Order();
+     
 
         const superOrderRepository = getRepository(SuperOrder);
 
@@ -103,5 +99,5 @@ class SuperOrderController {
     };
 }
 
-export default SuperOrderController;
+export default OrderController;
 
