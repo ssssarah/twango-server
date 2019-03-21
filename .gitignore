@@ -4,5 +4,4 @@ build/
 tmp/
 temp/
 *.iml
-ormconfig.json
 database.sqlite
