@@ -5,9 +5,9 @@ import { User } from './User';
 import { OrderItem } from './OrderItem';
 
 export enum Status {
-	ACCEPTED,
-	PENDING,
-	REFUSED,
+	ACCEPTED = "ACCEPTED",
+	PENDING = "PENDING",
+	REFUSED = "REFUSED",
 }
 
 @Entity('orderr')

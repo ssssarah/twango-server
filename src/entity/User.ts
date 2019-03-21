@@ -30,7 +30,7 @@ export class User {
     lastName: string;
 
     @Column()
-    @IsEmail()
+        //@IsEmail() TODO maybe fix, doesn't seem to work
     mail: string;
 
     @Column()

@@ -1,0 +1,152 @@
+{
+	"variables": [],
+	"info": {
+		"name": "21Go",
+		"_postman_id": "5d6bfee5-55c0-5501-728c-30788fc6a64b",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"description": "",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"url": "{{baseUrl}}login",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\":\"test\",\n\t\"password\":\"password\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"url": "{{baseUrl}}register",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"naaame\", \n\t\"password\": \"pwwwwd\",\n\t\"firstName\": \"firstNaaaame\", \n\t\"lastName\": \"lasssst\",\n\t\"mail\": \"mail@mail.com\",\n\t\"location\": \"idk\",\n\t\"phone\": \"0123456789\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"url": "{{baseUrl}}change-password",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "{{jwt}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"oldPassword\": \"passwordd\",\n\t\"newPassword\": \"password\"\n\t\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SuperOrder",
+			"description": "",
+			"item": [
+				{
+					"name": "Get superOrder",
+					"request": {
+						"url": "{{baseUrl}}superOrder/1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "New superOrder",
+					"request": {
+						"url": "{{baseUrl}}superOrder",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "{{jwt}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"storeURL\": \"domain.com\", \n\t\"storeLocation\" : \"super far\", \n\t\"deadline\": \"2019-03-20T23:29:52.678Z\", \n\t\"storeName\": \"stooore\",\n\t\"arrivalLocation\": \"someplace\",\n\t\"availableDispatch\": \"PICKUP\",\n\t\"tags\": []\n} "
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order",
+			"description": "",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"url": "",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "OrderItem",
+			"description": "",
+			"item": []
+		}
+	]
+}

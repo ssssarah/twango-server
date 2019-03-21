@@ -25,9 +25,7 @@ export class CreateFakeOrder1551370519438 implements MigrationInterface {
                 order.dispatch = Math.random() > 0.5 ? Dispatch.DELIVERY : Dispatch.PICKUP;
 
                 let status = Math.random();
-                status = status > 0.7 ? Status.ACCEPTED : (status > 0.3 ? Status.PENDING : Status.REFUSED);
-
-                order.status = status;
+                order.status =  status > 0.7 ? Status.ACCEPTED : (status > 0.3 ? Status.PENDING : Status.REFUSED);
                 order.user = await userRepository.findOne({id: Not(In(previousIds))});
 
                 previousIds.push(order.user.id);
@@ -39,7 +37,7 @@ export class CreateFakeOrder1551370519438 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        getRepository(Order).clear();
+        getRepository(Order).delete({});
     }
 
 }

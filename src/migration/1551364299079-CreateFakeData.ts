@@ -11,8 +11,8 @@ export class CreateFakeData1551364299079 implements MigrationInterface {
 	    const userRepository = getRepository(User);
         for(let i = 0; i < 50; ++i){
             let user : User = new User();
-            user.username = faker.internet.userName();
-            user.password = faker.internet.password();
+            user.username = i == 0 ? "test" : faker.internet.userName();
+            user.password = "password";
             user.firstName = faker.name.firstName();
             user.lastName = faker.name.lastName();
             user.mail = faker.internet.email();
@@ -26,7 +26,7 @@ export class CreateFakeData1551364299079 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        getRepository(User).clear();
+        getRepository(User).delete({});
     }
 
 }

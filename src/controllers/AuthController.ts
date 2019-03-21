@@ -10,21 +10,24 @@ class AuthController {
 
   static login = async (req: Request, res: Response) => {
 
-    console.log("got a login request from "+req.body.username);
+    console.log("got a login request from " + req.body.username);
     //Check if username and password are set
     let { username, password } = req.body;
     if (!(username && password)) {
       res.status(400).send();
+      return;
     }
 
     //Get user from database
     const userRepository = getRepository(User);
     let user: User;
+
     try {
       user = await userRepository.findOneOrFail({ where: { username } });
     } catch (error) {
       console.log("couldn't find user with that username/password combo");
       res.status(401).send();
+      return;
     }
 
     //Check if encrypted password match
@@ -42,46 +45,34 @@ class AuthController {
     );
 
     //Send the jwt in the response
-    res.json({jwt:token});
+    res.json({jwt: token});
   };
 
   static changePassword = async (req: Request, res: Response) => {
-    //Get ID from JWT
-    const id = res.locals.jwtPayload.userId;
 
-    //Get parameters from the body
     const { oldPassword, newPassword } = req.body;
     if (!(oldPassword && newPassword)) {
       res.status(400).send();
+      return;
     }
 
-    //Get user from the database
-    const userRepository = getRepository(User);
-    let user: User;
-    try {
-      user = await userRepository.findOneOrFail(id);
-    } catch (id) {
-      res.status(401).send();
-    }
-
-    //Check if old password matchs
+    let user = res.locals.user;
     if (!user.checkIfUnencryptedPasswordIsValid(oldPassword)) {
       res.status(401).send();
       return;
     }
 
-    //Validate de model (password lenght)
     user.password = newPassword;
     const errors = await validate(user);
     if (errors.length > 0) {
-      res.status(400).send(errors);
+      res.status(400).send({error: errors});
       return;
     }
-    //Hash the new password and save
-    user.hashPassword();
-    userRepository.save(user);
 
-    res.status(204).send();
+    user.hashPassword();
+    getRepository(User).save(user);
+    res.status(200).send({success: "The password has been changed"});
+
   };
 
 
@@ -96,23 +87,24 @@ class AuthController {
     user.location = location;
     user.phone = phone;
 
-    const errors = await validate(user);
+    const errors = await validate(user, { validationError: { target: false }});
     if (errors.length > 0) {
-      res.status(400).send(errors);
+      res.status(400).send({error: errors});
       return;
     }
 
     user.hashPassword();
 
     const userRepository = getRepository(User);
+
     try {
       await userRepository.save(user);
     } catch (e) {
-      res.status(409).send("username already in use");
+      res.status(409).send({error: "Username already in use"});
       return;
     }
 
-    res.status(201).send("User created");
+    res.status(201).send({success: "User created"});
   };
 }
 export default AuthController;

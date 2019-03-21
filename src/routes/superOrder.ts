@@ -1,33 +1,33 @@
 import {Router} from "express";
 import SuperOrderController from "../controllers/SuperOrderController";
-import {checkJwt} from "../middlewares/checkJwt";
+import {checkJwtMandatory, checkJwtOptional} from "../middlewares/checkJwt";
 
 const router = Router();
 
 // Get one superOrder
 router.get(
-    "/:id([0-9]+)",
+    "/:id([0-9]+)", [checkJwtOptional],
     SuperOrderController.getSuperOrder
 );
 
 //Create a new superOrder
 router.post(
     "/",
-    [checkJwt],
+    [checkJwtMandatory],
     SuperOrderController.newSuperOrder
 );
 
 //Edit one superOrder
 router.put(
     "/:id([0-9]+)",
-    [checkJwt],
+    [checkJwtMandatory],
     SuperOrderController.editSuperOrder
 );
 
 //Delete one user
 router.delete(
     "/:id([0-9]+)",
-    [checkJwt],
+    [checkJwtMandatory],
     SuperOrderController.deleteSuperOrder
 );
 

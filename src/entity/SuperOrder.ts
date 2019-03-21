@@ -1,13 +1,16 @@
-import {Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne,} from "typeorm";
-import {IsUrl, IsNotEmpty, IsDate, IsEnum} from "class-validator";
+import {Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne, RelationId,} from "typeorm";
+import {IsUrl, IsNotEmpty, IsDate, IsEnum, IsDateString, IsArray} from "class-validator";
 import {User} from "./User";
 import {Order} from "./Order";
 
 export enum Dispatch {
-    PICKUP, DELIVERY, BOTH
+    PICKUP = "PICKUP",
+    DELIVERY = "DELIVERY",
+    BOTH = "BOTH"
 }
 
 @Entity()
+
 export class SuperOrder {
 
     @PrimaryGeneratedColumn()
@@ -17,6 +20,9 @@ export class SuperOrder {
     @JoinColumn()
     @ManyToOne(type => User, user => user.superOrders)
     user : User;
+
+    @RelationId((superOrder: SuperOrder) => superOrder.user)
+    userId: number;
 
     @IsNotEmpty()
     @IsUrl()
@@ -28,7 +34,7 @@ export class SuperOrder {
     storeLocation: string;
 
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     @Column()
     deadline: Date;
 
@@ -42,9 +48,11 @@ export class SuperOrder {
     availableDispatch: Dispatch;
 
     @Column()
+    @IsNotEmpty()
     storeName: string;
 
-    @Column("simple-array")
+    @Column({type:"simple-json", nullable: true})
+    @IsArray()
     tags: string[];
 
     @OneToMany(type => Order, order => order.superOrder)

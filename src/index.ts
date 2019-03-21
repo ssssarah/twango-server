@@ -9,6 +9,7 @@ import {MigrationExecutor} from "typeorm/migration/MigrationExecutor";
 
 //Connects to the Database -> then starts the express
 
+
 createConnection().then(async connection => {
 
   console.log("Starting server program!");
