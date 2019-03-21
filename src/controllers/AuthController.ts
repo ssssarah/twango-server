@@ -100,11 +100,11 @@ class AuthController {
     try {
       await userRepository.save(user);
     } catch (e) {
-      res.status(409).send({error: "Username already in use"});
+      res.status(409).send({error: e.message});
       return;
     }
 
-    res.status(201).send({success: "User created"});
+    res.status(201).send({success: "Successful registration"});
   };
 }
 export default AuthController;
