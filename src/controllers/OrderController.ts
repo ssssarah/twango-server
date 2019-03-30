@@ -3,13 +3,16 @@ import {getRepository} from "typeorm";
 import {validate} from "class-validator";
 
 import {Order} from "../entity/Order";
+import {User} from "../entity/User";
+import {Dispatch, SuperOrder} from "../entity/SuperOrder";
+import {OrderItem} from "../entity/OrderItem";
 
 
 class OrderController { //TODO copy pasted this from superOrder, adapt it to order
 
 
     static getOrder = async (req: Request, res: Response) => {
-        const id: number = req.params.id;
+        /*const id: number = req.params.id;
         const OrderRepository = getRepository(Order);
 
         try {
@@ -17,37 +20,68 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
             res.send(Order);
         } catch (error) {
             res.status(404).send("Order not found");
-        }
+        }*/
 
     };
 
     static newOrder = async (req: Request, res: Response) => {
-        let {userId, superOrderId, dispatch} = req.body;
+
+        const user: User = res.locals.user;
+        let {superOrderId, dispatch, items} = req.body;
+        let superOrder: SuperOrder;
+
+        try{
+            superOrder = await getRepository(SuperOrder).findOne(superOrderId);
+        }
+        catch(err) {
+            res.status(401).send({error: "SuperOrder not found"});
+            return;
+        }
 
         let order = new Order();
-        //TODO fields and possibly orderItems at the same time
+        order.superOrder = superOrder;
+        order.user = user;
+
+        if(
+            (dispatch != Dispatch.PICKUP && dispatch != Dispatch.DELIVERY) ||
+            (superOrder.availableDispatch == Dispatch.DELIVERY && dispatch != Dispatch.DELIVERY) ||
+            (superOrder.availableDispatch == Dispatch.PICKUP && dispatch != Dispatch.PICKUP)
+        ){
+            res.status(401).send({error: "Invalid dispatch"});
+            return;
+        }
+
+        order.dispatch = dispatch;
+
+        for(let key in items){
+            let item = items[key];
+            let orderItem = new OrderItem();
+            orderItem.additionalInfo = item.additionalInfo;
+            orderItem.quantity = item.quantity;
+            order.orderItems.push(orderItem);
+        }
 
         const orderRepository = getRepository(Order);
-
         const errors = await validate(order);
+
         if (errors.length > 0) {
-            console.log(errors);
             res.status(400).json(errors);
             return;
         }
+
         try{
             await orderRepository.save(order);
         }
-        catch (e) {
-            res.status(409).send("couldn't create superorder");
+        catch (error) {
+            res.status(409).send({error: error.message});
             return;
         }
-        console.log("Order id is "+ order.id)
-        res.status(201).json({id : order.id});
+        res.status(201).send(order);
+
     };
 
     static editOrder = async (req: Request, res: Response) => {
-        let {stuff} = req.body; //TODO
+        /*let {stuff} = req.body; //TODO
 
         let id = req.params.id;
 
@@ -62,11 +96,11 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
             return;
         }
 
-        //TODO
+        //TODO*/
     };
 
     static deleteOrder = async (req: Request, res: Response) => {
-        const id = req.params.id;
+        /*const id = req.params.id;
 
         const orderRepository = getRepository(Order);
         let order: Order;
@@ -81,7 +115,7 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
         orderRepository.delete(id);
 
         //After all send a 204 (no content, but accepted) response
-        res.status(204).send();
+        res.status(204).send();*/
     };
 };
 

@@ -1,8 +1,8 @@
 import {Request, Response} from "express";
-import {getRepository} from "typeorm";
+import {Brackets, getRepository, SelectQueryBuilder} from "typeorm";
 import {validate} from "class-validator";
 
-import {SuperOrder} from "../entity/SuperOrder";
+import {Dispatch, SuperOrder} from "../entity/SuperOrder";
 import {User} from "../entity/User";
 import {Order} from "../entity/Order";
 
@@ -39,18 +39,13 @@ class SuperOrderController {
             res.send(response);
 
         } catch (error) {
-            res.status(404).send("Superorder not found");
+            res.status(404).send({error:"SuperOrder not found"});
         }
     };
 
     static newSuperOrder = async (req: Request, res: Response) => {
 
         const user: User = res.locals.user;
-
-        if(user == null){
-            res.status(401).send("Must be logged in");
-            return;
-        }
 
         let {storeURL, storeLocation, deadline, storeName, arrivalLocation, availableDispatch, tags} = req.body;
 
@@ -62,7 +57,7 @@ class SuperOrderController {
         superOrder.storeName = storeName;
         superOrder.arrivalLocation = arrivalLocation;
         superOrder.availableDispatch = availableDispatch;
-        superOrder.tags = tags;
+        superOrder.tags = tags.map(el => el.toLowerCase());
 
         const superOrderRepository = getRepository(SuperOrder);
 
@@ -153,16 +148,77 @@ class SuperOrderController {
         res.status(200).send({success: "SuperOrder deleted"});
     };
 
-    //TODO
+    //TODO test it
     static search = async (req: Request, res: Response) => {
-        console.log(req.query);
-        let terms = req.query.terms;
-        let sort = req.query.sort;
+
+        const RESULT_PER_PAGE = 8;
+        //let location = req.query.location; //TODO
         let tags = req.query.tags;
-        let location = req.query.location;
-        let nResults = req.query.nResults;
-        let user = req.query.nResults;
-        res.status(404).send("not found");
+        let sortType = req.query.sortType;
+        let sortOrder = req.query.sortOrder;
+        let page = req.query.page || 1;
+        let dispatch = req.query.dispatch;
+
+        try {
+            let queryBuilder: SelectQueryBuilder<SuperOrder> = getRepository(SuperOrder)
+                                                                .createQueryBuilder("super_order")
+                                                                .take(RESULT_PER_PAGE)
+                                                                .skip((page-1) * RESULT_PER_PAGE);
+
+            // {type: "deadline", order:"ASC/DESC"}
+            if(sortType != null && sortOrder != null){ //TODO check if empty and not specified in url is the same
+
+                if(sortOrder != "ASC" && sortOrder != "DESC"){
+                    res.status(404).send({error: "Invalid sorting order"});
+                    return;
+                }
+
+                if(sortType != "deadline" && sortType != "createdAt"){
+                    res.status(404).send({error: "Invalid sorting type"});
+                    return;
+                }
+
+                queryBuilder.orderBy(sortType, sortOrder);
+            }
+
+            if(tags != null){
+
+                queryBuilder.andWhere(new Brackets(sqb => {
+
+                    /*
+                        TODO tags= when array of one is passed, tags=___&tags=___ when array of multiple
+                        array of one ends up looking like just a variable so we shouldn't loop through it
+                        check type before?
+                    */
+                    for(let key in tags){
+                        let tag = '%' + tags[key]/*.toLowerCase()*/  + '%';
+                        //TODO case sensitive????? lowercase at creation & querying?
+                        sqb.orWhere("super_order.tags like :tag", { tag: tag });
+                        sqb.orWhere("super_order.storeName like :tag", { tag: tag });
+                        console.log(tag);
+                        //TODO this querying only takes the last tag into account, although it loops through all, logic issue
+                    }
+
+                }));
+
+            }
+
+            if(dispatch != null){
+                if(dispatch != Dispatch.DELIVERY && dispatch != Dispatch.PICKUP){
+                    res.status(404).send({error: "Invalid dispatch mode"});
+                    return;
+                }
+                queryBuilder.where("super_order.availableDispatch = :dispatch", {dispatch: dispatch});
+            }
+
+            let superOrders: SuperOrder[] = await queryBuilder.getMany();
+            res.send({superOrders: superOrders});
+
+        } catch (error) {
+            res.status(404).send({error: error.message});
+            return;
+        }
+
     };
 
 }

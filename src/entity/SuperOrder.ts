@@ -1,4 +1,13 @@
-import {Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne, RelationId,} from "typeorm";
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    OneToMany,
+    JoinColumn,
+    ManyToOne,
+    RelationId,
+    CreateDateColumn,
+} from "typeorm";
 import {IsUrl, IsNotEmpty, IsDate, IsEnum, IsDateString, IsArray} from "class-validator";
 import {User} from "./User";
 import {Order} from "./Order";
@@ -57,5 +66,10 @@ export class SuperOrder {
 
     @OneToMany(type => Order, order => order.superOrder)
     orders: Order[];
+
+    @Column()
+    @CreateDateColumn()
+    createdAt: Date;
+
 }
 

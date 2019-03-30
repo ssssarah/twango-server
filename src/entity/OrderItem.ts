@@ -8,7 +8,7 @@ export class OrderItem {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(type => Order, order => order.orderItems)
+    @ManyToOne(type => Order, order => order.orderItems, {cascade: ["insert"]})
     @IsNotEmpty()
     @JoinColumn()
     order: Order;

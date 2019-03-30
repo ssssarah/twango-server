@@ -1,6 +1,6 @@
 import {Router} from "express";
 import OrderController from "../controllers/OrderController";
-import {checkJwt} from "../middlewares/checkJwt";
+import {checkJwtMandatory} from "../middlewares/checkJwt";
 
 const router = Router();
 
@@ -11,21 +11,21 @@ const router = Router();
 //Create a new Order
 router.post(
     "/",
-    [checkJwt],
+    [checkJwtMandatory],
     OrderController.newOrder
 );
 
 //Edit one Order
 router.put(
     "/:id([0-9]+)",
-    [checkJwt],
+    [checkJwtMandatory],
     OrderController.editOrder
 );
 
 //Delete one user
 router.delete(
     "/:id([0-9]+)",
-    [checkJwt],
+    [checkJwtMandatory],
     OrderController.deleteOrder
 );
 
