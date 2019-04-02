@@ -1,2 +1,2 @@
 release: npm run typeorm schema:sync; npm run typeorm migration:run;
-web: npm run prod
+web: npm start
