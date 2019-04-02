@@ -166,8 +166,8 @@ class SuperOrderController {
                                                                 .skip((page-1) * RESULT_PER_PAGE);
 
             // {type: "deadline", order:"ASC/DESC"}
-            if(sortType != null && sortOrder != null){ //TODO check if empty and not specified in url is the same
-
+            if(isDefined(sortType) && isDefined(sortOrder)){
+                console.log(sortType == "");
                 if(sortOrder != "ASC" && sortOrder != "DESC"){
                     res.status(404).send({error: "Invalid sorting order"});
                     return;
@@ -181,29 +181,22 @@ class SuperOrderController {
                 queryBuilder.orderBy(sortType, sortOrder);
             }
 
-            if(tags != null){
-
-                queryBuilder.andWhere(new Brackets(sqb => {
-
-                    /*
-                        TODO tags= when array of one is passed, tags=___&tags=___ when array of multiple
-                        array of one ends up looking like just a variable so we shouldn't loop through it
-                        check type before?
-                    */
+            if(isDefined(tags)){                         //TODO case sensitive????? lowercase at creation & querying?
+                if(!Array.isArray(tags)){
+                    queryBuilder.where(`super_order.tags like :tag 
+                                                 or super_order.storeName like :tag`, {tag: `%${tags}%`});
+                }
+                else{
                     for(let key in tags){
-                        let tag = '%' + tags[key]/*.toLowerCase()*/  + '%';
-                        //TODO case sensitive????? lowercase at creation & querying?
-                        sqb.orWhere("super_order.tags like :tag", { tag: tag });
-                        sqb.orWhere("super_order.storeName like :tag", { tag: tag });
-                        console.log(tag);
-                        //TODO this querying only takes the last tag into account, although it loops through all, logic issue
+                        let obj = {};
+                        obj[`tag${key}`] = `%${tags[key]}%`;
+                        queryBuilder.orWhere(`super_order.tags like :tag${key} 
+                                                     or super_order.storeName like :tag${key}`, obj);
                     }
-
-                }));
-
+                }
             }
 
-            if(dispatch != null){
+            if(isDefined(dispatch)){
                 if(dispatch != Dispatch.DELIVERY && dispatch != Dispatch.PICKUP){
                     res.status(404).send({error: "Invalid dispatch mode"});
                     return;
@@ -211,7 +204,7 @@ class SuperOrderController {
                 queryBuilder.where("super_order.availableDispatch = :dispatch", {dispatch: dispatch});
             }
 
-            let superOrders: SuperOrder[] = await queryBuilder.getMany();
+            let superOrders = await queryBuilder.getMany();
             res.send({superOrders: superOrders});
 
         } catch (error) {
@@ -221,6 +214,10 @@ class SuperOrderController {
 
     };
 
+}
+
+function isDefined(str){
+    return str != null && str != "";
 }
 
 export default SuperOrderController;
