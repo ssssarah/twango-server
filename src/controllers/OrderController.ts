@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import {getRepository} from "typeorm";
 import {validate} from "class-validator";
 
-import {Order} from "../entity/Order";
+import {Order, Status} from "../entity/Order";
 import {User} from "../entity/User";
 import {Dispatch, SuperOrder} from "../entity/SuperOrder";
 import {OrderItem} from "../entity/OrderItem";
@@ -31,7 +31,7 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
         let superOrder: SuperOrder;
 
         try{
-            superOrder = await getRepository(SuperOrder).findOne(superOrderId);
+            superOrder = await getRepository(SuperOrder).findOneOrFail(superOrderId);
         }
         catch(err) {
             res.status(401).send({error: "SuperOrder not found"});
@@ -52,6 +52,9 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
         }
 
         order.dispatch = dispatch;
+        order.status = Status.PENDING;
+
+        order.orderItems = [];
 
         for(let key in items){
             let item = items[key];
@@ -76,7 +79,7 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
             res.status(409).send({error: error.message});
             return;
         }
-        res.status(201).send(order);
+        res.status(201).send({"order":order});
 
     };
 

@@ -36,6 +36,6 @@ export class Order {
 	@Column()
 	status: Status;
 
-	@OneToMany(type => OrderItem, orderItem => orderItem.order)
+	@OneToMany(type => OrderItem, orderItem => orderItem.order, {cascade: ["insert"]})
 	orderItems: OrderItem[];
 }

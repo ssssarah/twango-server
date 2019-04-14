@@ -1,10 +1,10 @@
 {
-  "type": "postgres",
-  "host": "ec2-184-73-153-64.compute-1.amazonaws.com",
-  "port": 5432,
-  "username": "nzxvzdckcnbgzf",
-  "password": "7b903c6caae7f6c98b1c30a7828a1f10497c6664c3309f0bfeed20b3f7120125",
-  "database": "d5fvfc8h6psn6i",
+  "type": "mysql",
+  "host": "localhost",
+  "port": 3306,
+  "username": "root",
+  "password": "sarah",
+  "database": "twango",
   "synchronize": true,
   "logging": false,
   "entities": [

@@ -11,7 +11,7 @@ const routes = Router();
 routes.use("/", auth);
 //routes.use("/user", user);
 routes.use("/superOrder", superOrder);
-//routes.use("/order", order);
+routes.use("/order", order);
 //routes.use("/orderItem", orderItem);
 
 export default routes;
