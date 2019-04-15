@@ -1,5 +1,5 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { IsEnum, IsIn, IsNotEmpty } from 'class-validator';
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, RelationId} from 'typeorm';
+import {IsBoolean, IsEnum, IsIn, IsNotEmpty} from 'class-validator';
 import { Dispatch, SuperOrder } from './SuperOrder';
 import { User } from './User';
 import { OrderItem } from './OrderItem';
@@ -25,6 +25,9 @@ export class Order {
 	@ManyToOne(type => User, user => user.orders)
 	user: User;
 
+	@RelationId((order: Order) => order.user)
+	userId: number;
+
 	@IsNotEmpty()
 	@IsEnum(Dispatch)
 	@Column()
@@ -36,6 +39,10 @@ export class Order {
 	@Column()
 	status: Status;
 
-	@OneToMany(type => OrderItem, orderItem => orderItem.order, {cascade: ["insert"]})
+	@OneToMany(type => OrderItem, orderItem => orderItem.order, {cascade: ["insert", "update"]})
 	orderItems: OrderItem[];
+
+	@IsBoolean()
+	@Column()
+	isDeleted: boolean;
 }

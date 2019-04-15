@@ -37,4 +37,18 @@ router.get(
     SuperOrderController.search
 );
 
+// Get My SuperOrders
+router.get(
+    "/mine",
+    [checkJwtMandatory],
+    SuperOrderController.getMySuperOrders
+);
+
+// Get my orders' superOrders
+router.get(
+    "/joined",
+    [checkJwtMandatory],
+    SuperOrderController.getMyOrdersSuperOrders
+);
+
 export default router;

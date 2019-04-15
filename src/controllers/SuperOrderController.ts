@@ -1,11 +1,12 @@
 import {Request, Response} from "express";
-import {Brackets, getRepository, SelectQueryBuilder} from "typeorm";
+import {getRepository, SelectQueryBuilder} from "typeorm";
 import {validate} from "class-validator";
 
 import {Dispatch, SuperOrder} from "../entity/SuperOrder";
 import {User} from "../entity/User";
 import {Order} from "../entity/Order";
 
+//TODO check isDeleted all over...........
 class SuperOrderController {
 
     static getSuperOrder = async (req: Request, res: Response) => {
@@ -41,6 +42,16 @@ class SuperOrderController {
         } catch (error) {
             res.status(404).send({error:"SuperOrder not found"});
         }
+    };
+
+    //TODO
+    static getMySuperOrders = async (req: Request, res: Response) => {
+        res.send();
+    };
+
+    //TODO
+    static getMyOrdersSuperOrders = async (req: Request, res: Response) => {
+        res.send();
     };
 
     static newSuperOrder = async (req: Request, res: Response) => {
@@ -124,7 +135,7 @@ class SuperOrderController {
         res.status(200).send({superOrder: superOrder});
     };
 
-    //TODO
+
     static deleteSuperOrder = async (req: Request, res: Response) => {
         const id = req.params.id;
 
@@ -132,7 +143,7 @@ class SuperOrderController {
         let superOrder: SuperOrder;
 
         try {
-            superOrder = await superOrderRepository.findOneOrFail(id);
+            superOrder = await superOrderRepository.findOneOrFail(id, { relations: ["orders"] });
         } catch (error) {
             res.status(404).send({error: "SuperOrder not found"});
             return;
@@ -144,7 +155,17 @@ class SuperOrderController {
             return;
         }
 
-        superOrderRepository.delete(id);
+        superOrder.isDeleted = true;
+        if(superOrder.orders){
+            let orderRepository = getRepository(Order);
+            for(let key in superOrder.orders) {
+                let order = superOrder.orders[key];
+                order.isDeleted = true;
+                await orderRepository.save(order);
+            }
+        }
+
+        await superOrderRepository.save(superOrder);
         res.status(200).send({success: "SuperOrder deleted"});
     };
 

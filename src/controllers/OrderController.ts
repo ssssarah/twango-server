@@ -103,7 +103,7 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
     };
 
     static deleteOrder = async (req: Request, res: Response) => {
-        /*const id = req.params.id;
+        const id = req.params.id;
 
         const orderRepository = getRepository(Order);
         let order: Order;
@@ -111,14 +111,19 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
         try {
             order = await orderRepository.findOneOrFail(id);
         } catch (error) {
-            res.status(404).send("User not found");
+            res.status(404).send({error: "Order not found"});
             return;
         }
 
-        orderRepository.delete(id);
+        let user : User = res.locals.user;
+        if(order.userId != user.id){
+            res.status(401).send();
+            return;
+        }
 
-        //After all send a 204 (no content, but accepted) response
-        res.status(204).send();*/
+        order.isDeleted = true;
+        await orderRepository.save(order);
+        res.status(200).send({success: "Order deleted"});
     };
 };
 

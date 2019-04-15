@@ -8,7 +8,7 @@ import {
     RelationId,
     CreateDateColumn,
 } from "typeorm";
-import {IsUrl, IsNotEmpty, IsDate, IsEnum, IsDateString, IsArray} from "class-validator";
+import {IsUrl, IsNotEmpty, IsDate, IsEnum, IsDateString, IsArray, IsBoolean} from "class-validator";
 import {User} from "./User";
 import {Order} from "./Order";
 
@@ -70,6 +70,10 @@ export class SuperOrder {
     @Column()
     @CreateDateColumn()
     createdAt: Date;
+
+    @IsBoolean()
+    @Column()
+    isDeleted: boolean;
 
 }
 
