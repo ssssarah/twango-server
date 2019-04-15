@@ -43,6 +43,6 @@ export class Order {
 	orderItems: OrderItem[];
 
 	@IsBoolean()
-	@Column()
+	@Column({default: false})
 	isDeleted: boolean;
 }

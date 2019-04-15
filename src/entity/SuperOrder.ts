@@ -72,7 +72,7 @@ export class SuperOrder {
     createdAt: Date;
 
     @IsBoolean()
-    @Column()
+    @Column({default: false})
     isDeleted: boolean;
 
 }
