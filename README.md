@@ -8,8 +8,8 @@
 - [x] Create order
 - [x] Delete order
 - [x] Search superOrders withing reach with tags/search terms
-- [ ] Get my superOrders
-- [ ] Get my orders' superOrders
+- [x] Get my superOrders
+- [x] Get my orders' superOrders
 - [x] Change status of order
 - [ ] Change password
 - [ ] Search superOrders within reach of location (still have to figure out API for coordinates check?)

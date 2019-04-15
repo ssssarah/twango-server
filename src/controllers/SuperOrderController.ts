@@ -6,52 +6,75 @@ import {Dispatch, SuperOrder} from "../entity/SuperOrder";
 import {User} from "../entity/User";
 import {Order} from "../entity/Order";
 
-//TODO check isDeleted all over...........
 class SuperOrderController {
 
+    //TODO orders have no information in them, get the orderItems and some userInfo
     static getSuperOrder = async (req: Request, res: Response) => {
 
         const id: number = req.params.id;
-        const superOrderRepository = getRepository(SuperOrder);
+        const user: User = res.locals.user;
+
         try {
-            const superOrder = await superOrderRepository.findOneOrFail({id: id, isDeleted: false});
-            let response = {superOrder: superOrder};
+            const superOrder = await getRepository(SuperOrder).findOneOrFail({id: id, isDeleted: false});
 
-            const user: User = res.locals.user;
-
-            //if logged in, potentially add to response some info
             if(user != null){
-                let orderRepository = getRepository(Order);
-                //if superOrder is mine, get all orders
+
+                //if superOrder is mine, get all orders, else look into the superOrder's orders if one is mine
                 if(user.id == superOrder.userId){
-                    let orders = await orderRepository.find({superOrder: superOrder, isDeleted: false});
-                    if(orders != null){
-                        response["orders"] = orders;
-                    }
+                    superOrder["orders"] = await getRepository(Order).find(
+                    {superOrder: superOrder, isDeleted: false}
+                    );
                 }
-                //look into the superOrder's orders if one is mine
                 else{
-                    let order = await orderRepository.findOne({superOrder: superOrder, user: user, isDeleted: false});
-                    if(order != null){
-                        response["myOrder"] = order;
-                    }
+                    superOrder["myOrder"] = await getRepository(Order).findOne(
+                    {superOrder: superOrder, user: user, isDeleted: false}
+                    );
                 }
             }
-            res.send(response);
+
+            res.status(200).send({superOrder: superOrder});
 
         } catch (error) {
             res.status(404).send({error: "SuperOrder not found"});
         }
     };
 
-    //TODO
     static getMySuperOrders = async (req: Request, res: Response) => {
-        res.send();
+        const user: User = res.locals.user;
+        const superOrders = await getRepository(SuperOrder).createQueryBuilder("superOrder")
+            .where("superOrder.userId = :userId", { userId: user.id })
+            .leftJoinAndSelect(
+                "superOrder.orders", "order",
+                "order.isDeleted = :isDeleted", { isDeleted: false })
+            .leftJoinAndSelect("order.orderItems", "orderItem")
+            .getMany();
+
+        //TODO add some user and orderItem info
+
+        res.status(200).send({superOrders: superOrders});
     };
 
-    //TODO
     static getMyOrdersSuperOrders = async (req: Request, res: Response) => {
-        res.send();
+        const user: User = res.locals.user;
+
+        const orders: Order[] = await getRepository(Order).createQueryBuilder("order")
+            .where("order.userId = :userId", { userId: user.id })
+            .andWhere("order.isDeleted = :isDeleted", {isDeleted: false})
+            .leftJoinAndSelect("order.orderItems", "orderItem")
+            .leftJoinAndSelect("order.superOrder", "superOrder")
+            .leftJoinAndSelect("superOrder.user", "user")
+            .getMany();
+
+        console.log(orders);
+
+        const superOrders = orders.map((order: Order) => {
+            let superOrder = order.superOrder;
+            delete order.superOrder;
+            superOrder["myOrder"] = order;
+            return superOrder;
+        });
+
+        res.status(200).send({superOrders: superOrders});
     };
 
     static newSuperOrder = async (req: Request, res: Response) => {
@@ -69,6 +92,7 @@ class SuperOrderController {
         superOrder.arrivalLocation = arrivalLocation;
         superOrder.availableDispatch = availableDispatch;
         superOrder.tags = tags.map(el => el.toLowerCase());
+        //TODO THIS DOESNT WORK ==> check id 151, empty array becomes [] instead of ""
 
         const superOrderRepository = getRepository(SuperOrder);
 
@@ -88,53 +112,7 @@ class SuperOrderController {
             return;
         }
 
-};
-
-    //TODO
-    static editSuperOrder = async (req: Request, res: Response) => {
-        let {storeURL, storeLocation, deadline, arrivalLocation, availableDispatch} = req.body;
-
-        let id = req.params.id;
-
-        const superOrderRepository = getRepository(SuperOrder);
-
-        let superOrder: SuperOrder;
-
-        try {
-            superOrder = await superOrderRepository.findOneOrFail({id: id, isDeleted: false});
-        } catch (error) {
-            res.status(404).send({error: "Superorder not found"});
-            return;
-        }
-
-        let user : User = res.locals.user;
-        if(superOrder.userId != user.id){
-            res.status(401).send();
-            return;
-        }
-
-        superOrder.storeURL = storeURL;
-        superOrder.storeLocation = storeLocation;
-        superOrder.deadline = deadline;
-        superOrder.arrivalLocation = arrivalLocation;
-        superOrder.availableDispatch = availableDispatch;
-
-        const errors = await validate(superOrder, { validationError: { target: false }});
-        if (errors.length > 0) {
-            res.status(400).send(errors);
-            return;
-        }
-
-        try {
-            await superOrderRepository.save(superOrder);
-        } catch (e) {
-            res.status(409).send({error: "Couldn't save superOrder"});
-            return;
-        }
-
-        res.status(200).send({superOrder: superOrder});
     };
-
 
     static deleteSuperOrder = async (req: Request, res: Response) => {
         const id = req.params.id;
@@ -173,7 +151,6 @@ class SuperOrderController {
         res.status(200).send({success: "SuperOrder deleted"});
     };
 
-    //TODO test it
     static search = async (req: Request, res: Response) => {
 
         const RESULT_PER_PAGE = 8;
@@ -239,6 +216,51 @@ class SuperOrderController {
         }
 
     };
+
+
+    /*static editSuperOrder = async (req: Request, res: Response) => {
+        let {storeURL, storeLocation, deadline, arrivalLocation, availableDispatch} = req.body;
+
+        let id = req.params.id;
+
+        const superOrderRepository = getRepository(SuperOrder);
+
+        let superOrder: SuperOrder;
+
+        try {
+            superOrder = await superOrderRepository.findOneOrFail({id: id, isDeleted: false});
+        } catch (error) {
+            res.status(404).send({error: "Superorder not found"});
+            return;
+        }
+
+        let user : User = res.locals.user;
+        if(superOrder.userId != user.id){
+            res.status(401).send();
+            return;
+        }
+
+        superOrder.storeURL = storeURL;
+        superOrder.storeLocation = storeLocation;
+        superOrder.deadline = deadline;
+        superOrder.arrivalLocation = arrivalLocation;
+        superOrder.availableDispatch = availableDispatch;
+
+        const errors = await validate(superOrder, { validationError: { target: false }});
+        if (errors.length > 0) {
+            res.status(400).send(errors);
+            return;
+        }
+
+        try {
+            await superOrderRepository.save(superOrder);
+        } catch (e) {
+            res.status(409).send({error: "Couldn't save superOrder"});
+            return;
+        }
+
+        res.status(200).send({superOrder: superOrder});
+    };*/
 
 }
 

@@ -5,7 +5,6 @@ import {checkJwtMandatory} from "../middlewares/checkJwt";
 const router = Router();
 
 // Get one Order
-
 //router.get("/:id([0-9]+)", OrderController.getOneById);
 
 //Create a new Order
@@ -33,8 +32,5 @@ router.put("/status",
     [checkJwtMandatory],
     OrderController.changeOrderStatus
 );
-
-// Search Orders
-// router.get("/search", OrderController.search);
 
 export default router;
