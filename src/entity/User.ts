@@ -6,7 +6,7 @@ import {
     OneToMany,
 } from "typeorm";
 
-import {Length, IsPhoneNumber, IsEmail} from "class-validator";
+import {Length, IsPhoneNumber, IsEmail, IsUrl} from "class-validator";
 import * as bcrypt from "bcryptjs";
 import {Order} from "./Order";
 import {SuperOrder} from "./SuperOrder";
@@ -49,6 +49,10 @@ export class User {
 
     @OneToMany(type => SuperOrder, superOrder => superOrder.user)
     superOrders: SuperOrder[];
+
+    @Column()
+    @IsUrl()
+    imageUrl: string; //TODO rerun migrations
 
     hashPassword() {
         this.password = bcrypt.hashSync(this.password, 8);

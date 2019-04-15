@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {getRepository, SelectQueryBuilder} from "typeorm";
+import {createQueryBuilder, getRepository, SelectQueryBuilder} from "typeorm";
 import {validate} from "class-validator";
 
 import {Dispatch, SuperOrder} from "../entity/SuperOrder";
@@ -7,49 +7,63 @@ import {User} from "../entity/User";
 import {Order} from "../entity/Order";
 
 class SuperOrderController {
+    //TODO possibility add more info about users in the 3 get methods (id + image?) 
 
-    //TODO orders have no information in them, get the orderItems and some userInfo
     static getSuperOrder = async (req: Request, res: Response) => {
 
         const id: number = req.params.id;
         const user: User = res.locals.user;
+        let superOrder: SuperOrder = await getRepository(SuperOrder).createQueryBuilder("superOrder")
+            .select(["superOrder", "user.firstName", "user.lastName"])
+            .leftJoin("superOrder.user", "user")
+            .where("superOrder.id = :id", {id: id})
+            .andWhere("superOrder.isDeleted = :isDeleted", {isDeleted: false})
+            .getOne();
 
-        try {
-            const superOrder = await getRepository(SuperOrder).findOneOrFail({id: id, isDeleted: false});
-
-            if(user != null){
-
-                //if superOrder is mine, get all orders, else look into the superOrder's orders if one is mine
-                if(user.id == superOrder.userId){
-                    superOrder["orders"] = await getRepository(Order).find(
-                    {superOrder: superOrder, isDeleted: false}
-                    );
-                }
-                else{
-                    superOrder["myOrder"] = await getRepository(Order).findOne(
-                    {superOrder: superOrder, user: user, isDeleted: false}
-                    );
-                }
-            }
-
-            res.status(200).send({superOrder: superOrder});
-
-        } catch (error) {
+        if(superOrder == null){
             res.status(404).send({error: "SuperOrder not found"});
+            return;
         }
+
+        if(user != null){
+
+            let qb =  await getRepository(Order).createQueryBuilder("order");
+            //if superOrder is mine, get all orders, else look into the superOrder's orders if one is mine
+            if(user.id == superOrder.userId){
+
+                superOrder["orders"] = await qb.select(["order", "user.firstName", "user.lastName"])
+                    .leftJoin("order.user", "user")
+                    .leftJoinAndSelect("order.orderItems", "orderItems")
+                    .where("order.superOrderId = :superOrderId", {superOrderId: superOrder.id})
+                    .andWhere("order.isDeleted = :isDeleted", {isDeleted: false})
+                    .getMany();
+
+            }
+            else{
+                superOrder["myOrder"] = await qb
+                    .where("order.superOrderId = :superOrderId", {superOrderId: superOrder.id})
+                    .andWhere("order.isDeleted = :isDeleted", {isDeleted: false})
+                    .andWhere("order.userId = :userId", {userId: user.id})
+                    .leftJoinAndSelect("order.orderItems", "orderItem")
+                    .getOne();
+            }
+        }
+
+        res.status(200).send({superOrder: superOrder});
+
     };
 
     static getMySuperOrders = async (req: Request, res: Response) => {
         const user: User = res.locals.user;
         const superOrders = await getRepository(SuperOrder).createQueryBuilder("superOrder")
+            .select(["user.firstName", "user.lastName", "superOrder"])
             .where("superOrder.userId = :userId", { userId: user.id })
             .leftJoinAndSelect(
                 "superOrder.orders", "order",
                 "order.isDeleted = :isDeleted", { isDeleted: false })
-            .leftJoinAndSelect("order.orderItems", "orderItem")
+            .leftJoin("order.user", "user")
+            .leftJoinAndSelect("order.orderItems", "orderItems")
             .getMany();
-
-        //TODO add some user and orderItem info
 
         res.status(200).send({superOrders: superOrders});
     };
@@ -58,14 +72,13 @@ class SuperOrderController {
         const user: User = res.locals.user;
 
         const orders: Order[] = await getRepository(Order).createQueryBuilder("order")
+            .select(["order", "user.firstName", "user.lastName"])
             .where("order.userId = :userId", { userId: user.id })
             .andWhere("order.isDeleted = :isDeleted", {isDeleted: false})
             .leftJoinAndSelect("order.orderItems", "orderItem")
             .leftJoinAndSelect("order.superOrder", "superOrder")
-            .leftJoinAndSelect("superOrder.user", "user")
+            .leftJoin("superOrder.user", "user")
             .getMany();
-
-        console.log(orders);
 
         const superOrders = orders.map((order: Order) => {
             let superOrder = order.superOrder;
