@@ -85,7 +85,7 @@
 				{
 					"name": "Get superOrder",
 					"request": {
-						"url": "{{baseUrl}}superOrder/1",
+						"url": "{{baseUrl}}superOrder/101",
 						"method": "GET",
 						"header": [
 							{
@@ -118,8 +118,134 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"storeURL\": \"domain.com\", \n\t\"storeLocation\" : \"super far\", \n\t\"deadline\": \"2019-03-20T23:29:52.678Z\", \n\t\"storeName\": \"stooore\",\n\t\"arrivalLocation\": \"someplace\",\n\t\"availableDispatch\": \"PICKUP\",\n\t\"tags\": []\n} "
+							"raw": "{\n\t\"storeURL\": \"domain.com\", \n\t\"storeLocation\" : \"super far\", \n\t\"deadline\": \"2019-03-20T23:29:52.678Z\", \n\t\"storeName\": \"stooore\",\n\t\"arrivalLocation\": \"someplace\",\n\t\"availableDispatch\": \"PICKUP\",\n\t\"tags\": [\"test1\", \"test2\", \"test3\"]\n} "
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Delete superOrder",
+					"request": {
+						"url": "{{baseUrl}}superOrder/101",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Edit SuperOrder",
+					"request": {
+						"url": "",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Orders' SuperOrders",
+					"request": {
+						"url": "{{baseUrl}}superOrder/joined",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Search SuperOrder",
+					"request": {
+						"url": {
+							"raw": "{{baseUrl}}superOrder/search",
+							"host": [
+								"{{baseUrl}}superOrder"
+							],
+							"path": [
+								"search"
+							],
+							"query": [
+								{
+									"key": "dispatch",
+									"value": "PICKUP",
+									"equals": true,
+									"description": "",
+									"disabled": true
+								},
+								{
+									"key": "tags",
+									"value": "test1",
+									"equals": true,
+									"description": "",
+									"disabled": true
+								},
+								{
+									"key": "sortType",
+									"value": "deadline",
+									"equals": true,
+									"description": "",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "2",
+									"equals": true,
+									"description": "",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "ASC",
+									"equals": true,
+									"description": "",
+									"disabled": true
+								},
+								{
+									"key": "tags",
+									"value": "test2",
+									"equals": true,
+									"description": "",
+									"disabled": true
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get My SuperOrders",
+					"request": {
+						"url": "{{baseUrl}}superOrder/mine",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt}}",
+								"description": ""
+							}
+						],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -133,10 +259,66 @@
 				{
 					"name": "Create Order",
 					"request": {
-						"url": "",
-						"method": "GET",
-						"header": [],
+						"url": "{{baseUrl}}order",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"superOrderId\": 102,\n\t\"dispatch\": \"PICKUP\",\n\t\"items\": [\n\t\t{\n\t\t\t\"additionalInfo\": \"this matters a lot\",\n\t\t\t\"quantity\": 10\n\t\t},\n\t\t{\n\t\t\t\"additionalInfo\": \"this matters a lot too\",\n\t\t\t\"quantity\": 1\n\t\t},\n\t\t{\n\t\t\t\"additionalInfo\": \"this matters a lot less\",\n\t\t\t\"quantity\": 2\n\t\t}\n\t]\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Order",
+					"request": {
+						"url": "{{baseUrl}}order/591",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt}}",
+								"description": ""
+							}
+						],
 						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Order Status",
+					"request": {
+						"url": "{{baseUrl}}order/status",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"status\": \"ACCEPTED\",\n\t\"orderId\": 504\n}"
+						},
 						"description": ""
 					},
 					"response": []
@@ -144,9 +326,49 @@
 			]
 		},
 		{
-			"name": "OrderItem",
+			"name": "User",
 			"description": "",
-			"item": []
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"url": "{{baseUrl}}user/profile",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"url": "{{baseUrl}}user/110",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Profile",
+					"request": {
+						"url": " {{baseUrl}}user/profile",
+						"method": "PUT",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
