@@ -16,7 +16,7 @@
 - [x] Get Profile
 - [ ] Edit Profile
 - [ ] Search superOrders within reach of location (still have to figure out API for coordinates check?)
-
+- [ ] Define how user pictures are stored, and if third party hosting solution like cloudinary is called in  front or back
 # Twango
 
 Base code from https://github.com/andregardi/jwt-express-typeorm

@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {createQueryBuilder, getRepository, SelectQueryBuilder} from "typeorm";
+import {getRepository, SelectQueryBuilder} from "typeorm";
 import {validate} from "class-validator";
 
 import {Dispatch, SuperOrder} from "../entity/SuperOrder";
@@ -7,14 +7,13 @@ import {User} from "../entity/User";
 import {Order} from "../entity/Order";
 
 class SuperOrderController {
-    //TODO possibility add more info about users in the 3 get methods (id + image?) 
 
     static getSuperOrder = async (req: Request, res: Response) => {
 
         const id: number = req.params.id;
         const user: User = res.locals.user;
         let superOrder: SuperOrder = await getRepository(SuperOrder).createQueryBuilder("superOrder")
-            .select(["superOrder", "user.firstName", "user.lastName"])
+            .select(["superOrder", "user.firstName", "user.lastName", "user.id", "user.imageUrl"])
             .leftJoin("superOrder.user", "user")
             .where("superOrder.id = :id", {id: id})
             .andWhere("superOrder.isDeleted = :isDeleted", {isDeleted: false})
@@ -31,7 +30,7 @@ class SuperOrderController {
             //if superOrder is mine, get all orders, else look into the superOrder's orders if one is mine
             if(user.id == superOrder.userId){
 
-                superOrder["orders"] = await qb.select(["order", "user.firstName", "user.lastName"])
+                superOrder["orders"] = await qb.select(["order", "user.firstName", "user.lastName", "user.id", "user.imageUrl"])
                     .leftJoin("order.user", "user")
                     .leftJoinAndSelect("order.orderItems", "orderItems")
                     .where("order.superOrderId = :superOrderId", {superOrderId: superOrder.id})
@@ -56,7 +55,7 @@ class SuperOrderController {
     static getMySuperOrders = async (req: Request, res: Response) => {
         const user: User = res.locals.user;
         const superOrders = await getRepository(SuperOrder).createQueryBuilder("superOrder")
-            .select(["user.firstName", "user.lastName", "superOrder"])
+            .select(["user.firstName", "user.lastName", "superOrder", "user.id", "user.imageUrl"])
             .where("superOrder.userId = :userId", { userId: user.id })
             .leftJoinAndSelect(
                 "superOrder.orders", "order",
@@ -72,7 +71,7 @@ class SuperOrderController {
         const user: User = res.locals.user;
 
         const orders: Order[] = await getRepository(Order).createQueryBuilder("order")
-            .select(["order", "user.firstName", "user.lastName"])
+            .select(["order", "user.firstName", "user.lastName", "user.id", "user.imageUrl"])
             .where("order.userId = :userId", { userId: user.id })
             .andWhere("order.isDeleted = :isDeleted", {isDeleted: false})
             .leftJoinAndSelect("order.orderItems", "orderItem")
@@ -106,7 +105,6 @@ class SuperOrderController {
         superOrder.availableDispatch = availableDispatch;
         superOrder.tags = tags.map(el => el.toLowerCase());
         superOrder.isDeleted = false;
-        //TODO THIS DOESNT WORK ==> check id 151, empty array becomes [] instead of ""
 
         const superOrderRepository = getRepository(SuperOrder);
 
