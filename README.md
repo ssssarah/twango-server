@@ -1,20 +1,19 @@
 # API endpoints:
 
-- Register: DONE
-- Log In: DONE
-- Create superOrder: DONE
-- Get superOrder: DONE (todo filter out isDeleted)
-- Delete superOrder: DONE, to TEST
-- Create order: DONE, to TEST
-- Delete order: DONE, to TEST
-- Search superOrders withing reach with tags/search terms: DONE, to TEST (todo filter out isDeleted)
-- Get my superOrders: TODO
-- Get my orders' superOrders: TODO
-- Change status of order: TODO
-- Change password: TODO
-- Search superOrders within reach of location: TODO, still have to figure out API for coordinates check?
-
-- Define anything related to retrieving user profiles
+- [x] Register
+- [x] Log In
+- [x] Create superOrder
+- [x] Get superOrder
+- [x] Delete superOrder
+- [x] Create order
+- [x] Delete order
+- [x] Search superOrders withing reach with tags/search terms
+- [ ] Get my superOrders
+- [ ] Get my orders' superOrders
+- [x] Change status of order
+- [ ] Change password
+- [ ] Search superOrders within reach of location (still have to figure out API for coordinates check?)
+- [ ] Define anything related to retrieving user profiles
 
 # Twango
 

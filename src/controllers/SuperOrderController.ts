@@ -14,7 +14,7 @@ class SuperOrderController {
         const id: number = req.params.id;
         const superOrderRepository = getRepository(SuperOrder);
         try {
-            const superOrder = await superOrderRepository.findOneOrFail(id);
+            const superOrder = await superOrderRepository.findOneOrFail({id: id, isDeleted: false});
             let response = {superOrder: superOrder};
 
             const user: User = res.locals.user;
@@ -24,14 +24,14 @@ class SuperOrderController {
                 let orderRepository = getRepository(Order);
                 //if superOrder is mine, get all orders
                 if(user.id == superOrder.userId){
-                    let orders = await orderRepository.find({superOrder: superOrder});
+                    let orders = await orderRepository.find({superOrder: superOrder, isDeleted: false});
                     if(orders != null){
                         response["orders"] = orders;
                     }
                 }
                 //look into the superOrder's orders if one is mine
                 else{
-                    let order = await orderRepository.findOne({superOrder: superOrder, user: user});
+                    let order = await orderRepository.findOne({superOrder: superOrder, user: user, isDeleted: false});
                     if(order != null){
                         response["myOrder"] = order;
                     }
@@ -40,7 +40,7 @@ class SuperOrderController {
             res.send(response);
 
         } catch (error) {
-            res.status(404).send({error:"SuperOrder not found"});
+            res.status(404).send({error: "SuperOrder not found"});
         }
     };
 
@@ -101,7 +101,7 @@ class SuperOrderController {
         let superOrder: SuperOrder;
 
         try {
-            superOrder = await superOrderRepository.findOneOrFail(id);
+            superOrder = await superOrderRepository.findOneOrFail({id: id, isDeleted: false});
         } catch (error) {
             res.status(404).send({error: "Superorder not found"});
             return;
@@ -143,7 +143,11 @@ class SuperOrderController {
         let superOrder: SuperOrder;
 
         try {
-            superOrder = await superOrderRepository.findOneOrFail(id, { relations: ["orders"] });
+            superOrder = await superOrderRepository.findOneOrFail(
+            {id: id, isDeleted: false},
+            { relations: ["orders"] }
+            );
+
         } catch (error) {
             res.status(404).send({error: "SuperOrder not found"});
             return;
@@ -186,9 +190,10 @@ class SuperOrderController {
                                                                 .take(RESULT_PER_PAGE)
                                                                 .skip((page-1) * RESULT_PER_PAGE);
 
+            queryBuilder.where("isDeleted = 0");
+
             // {type: "deadline", order:"ASC/DESC"}
             if(isDefined(sortType) && isDefined(sortOrder)){
-                console.log(sortType == "");
                 if(sortOrder != "ASC" && sortOrder != "DESC"){
                     res.status(404).send({error: "Invalid sorting order"});
                     return;

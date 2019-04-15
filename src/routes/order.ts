@@ -29,6 +29,11 @@ router.delete(
     OrderController.deleteOrder
 );
 
+router.put("/status",
+    [checkJwtMandatory],
+    OrderController.changeOrderStatus
+);
+
 // Search Orders
 // router.get("/search", OrderController.search);
 

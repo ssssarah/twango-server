@@ -8,7 +8,7 @@ import {Dispatch, SuperOrder} from "../entity/SuperOrder";
 import {OrderItem} from "../entity/OrderItem";
 
 
-class OrderController { //TODO copy pasted this from superOrder, adapt it to order
+class OrderController {
 
 
     static getOrder = async (req: Request, res: Response) => {
@@ -84,7 +84,7 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
     };
 
     static editOrder = async (req: Request, res: Response) => {
-        /*let {stuff} = req.body; //TODO
+        /*let {stuff} = req.body; //TODO define if it can be done??
 
         let id = req.params.id;
 
@@ -99,7 +99,7 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
             return;
         }
 
-        //TODO*/
+        */
     };
 
     static deleteOrder = async (req: Request, res: Response) => {
@@ -125,7 +125,46 @@ class OrderController { //TODO copy pasted this from superOrder, adapt it to ord
         await orderRepository.save(order);
         res.status(200).send({success: "Order deleted"});
     };
-};
+
+    static changeOrderStatus = async (req: Request, res: Response) => {
+        const {status, orderId} = req.body;
+        let user : User = res.locals.user;
+        let order;
+        let orderRepository = getRepository(Order);
+
+        try{
+            order = await orderRepository.findOneOrFail(
+            {id: orderId, isDeleted: false},
+            {relations: ["superOrder"]}
+            );
+        }
+        catch(err){
+            res.status(404).send({error: "Order not found"});
+            return;
+        }
+
+        if(order.superOrder.userId != user.id){
+            res.status(401).send();
+            return;
+        }
+
+        if(status != "ACCEPTED" && status != "REFUSED"){
+            console.log(status);
+            res.status(400).send({error: "Invalid status"});
+            return;
+        }
+
+        if(order.status != Status.PENDING){
+            res.status(400).send({error: "Can't change this order's status"});
+            return;
+        }
+
+        order.status = <Status>Status[status];
+        await orderRepository.save(order);
+        res.status(200).send({success: `Successfully changed order ${orderId} status to ${status}`});
+
+    }
+}
 
 export default OrderController;
 
