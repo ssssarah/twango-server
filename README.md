@@ -12,8 +12,10 @@
 - [x] Get my orders' superOrders
 - [x] Change status of order
 - [x] Change password
+- [x] Get User By Id
+- [x] Get Profile
+- [ ] Edit Profile
 - [ ] Search superOrders within reach of location (still have to figure out API for coordinates check?)
-- [ ] Define anything related to retrieving user profiles (edit user? delete?)
 
 # Twango
 

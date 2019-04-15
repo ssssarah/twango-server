@@ -1,32 +1,27 @@
 import { Router } from "express";
-  import UserController from "../controllers/UserController";
-  import { checkJwt } from "../middlewares/checkJwt";
-import { User } from "../entity/User";
+import UserController from "../controllers/UserController";
+import { checkJwtMandatory, checkJwtOptional } from "../middlewares/checkJwt";
 
-  const router = Router();
+const router = Router();
 
-  //Get all users
-  router.get("/", [checkJwt], UserController.listAll);
+// Get Profile
+router.get(
+    "/profile",
+    [checkJwtMandatory],
+    UserController.getProfile
+);
 
-  // Get one user
-  router.get(
-    "/:id([0-9]+)",
-    [checkJwt],
-    UserController.getOneById
-  );
+// Get one user
+router.get(
+  "/:id([0-9]+)",
+  UserController.getOneById
+);
 
-  //Edit one user
-  router.patch(
-    "/:id([0-9]+)",
-    [checkJwt],
-    UserController.editUser
-  );
+//Edit one user
+router.put(
+  "/profile",
+  [checkJwtMandatory],
+  UserController.editUser
+);
 
-  //Delete one user
-  router.delete(
-    "/:id([0-9]+)",
-    [checkJwt],
-    UserController.deleteUser
-  );
-
-  export default router;
+export default router;

@@ -6,21 +6,23 @@ import {User} from "../entity/User";
 
 class UserController {
 
-    static listAll = async (req: Request, res: Response) => {
-        const userRepository = getRepository(User);
-        const users = await userRepository.find({select: ["id", "username"]});
-        res.send(users);
-    };
-
     static getOneById = async (req: Request, res: Response) => {
         const id: number = req.params.id;
         const userRepository = getRepository(User);
         try {
-            const user = await userRepository.findOneOrFail(id, {select: ["id", "username"]});
-            res.send(user);
+            const user = await userRepository.findOneOrFail(id,
+            {select: ["id", "username", "firstName", "lastName", "imageUrl"]}
+            );
+            res.status(200).send(user);
         } catch (error) {
-            res.status(404).send("User not found");
+            res.status(404).send({error: "User not found"});
         }
+    };
+
+    static getProfile = async (req: Request, res: Response) => {
+        const user: User = res.locals.user;
+        delete user.password;
+        res.status(200).send({profile: user});
     };
 
     static editUser = async (req: Request, res: Response) => {
@@ -62,22 +64,6 @@ class UserController {
         res.status(204).send();
     };
 
-    static deleteUser = async (req: Request, res: Response) => {
-        const id = req.params.id;
-
-        const userRepository = getRepository(User);
-        let user: User;
-        try {
-            user = await userRepository.findOneOrFail(id);
-        } catch (error) {
-            res.status(404).send("User not found");
-            return;
-        }
-        userRepository.delete(id);
-
-        //After all send a 204 (no content, but accepted) response
-        res.status(204).send();
-    };
 }
 
 export default UserController;

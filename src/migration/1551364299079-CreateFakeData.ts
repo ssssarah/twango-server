@@ -18,6 +18,7 @@ export class CreateFakeData1551364299079 implements MigrationInterface {
             user.mail = faker.internet.email();
             user.phone = faker.phone.phoneNumber();
             user.location = faker.address.city();
+            user.imageUrl = faker.image.imageUrl(300,300);
             user.hashPassword();
             await userRepository.save(user);
 		}

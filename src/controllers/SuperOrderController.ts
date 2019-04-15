@@ -105,6 +105,7 @@ class SuperOrderController {
         superOrder.arrivalLocation = arrivalLocation;
         superOrder.availableDispatch = availableDispatch;
         superOrder.tags = tags.map(el => el.toLowerCase());
+        superOrder.isDeleted = false;
         //TODO THIS DOESNT WORK ==> check id 151, empty array becomes [] instead of ""
 
         const superOrderRepository = getRepository(SuperOrder);
@@ -197,7 +198,8 @@ class SuperOrderController {
                 queryBuilder.orderBy(sortType, sortOrder);
             }
 
-            if(isDefined(tags)){                         //TODO case sensitive????? lowercase at creation & querying?
+            if(isDefined(tags)){
+                //TODO case sensitive????? lowercase at creation & querying?
                 if(!Array.isArray(tags)){
                     queryBuilder.where(`super_order.tags like :tag 
                                                  or super_order.storeName like :tag`, {tag: `%${tags}%`});
@@ -210,7 +212,7 @@ class SuperOrderController {
                                                      or super_order.storeName like :tag${key}`, obj);
                     }
                 }
-            }
+            } //TODO multiple tags search doesn't work....
 
             if(isDefined(dispatch)){
                 if(dispatch != Dispatch.DELIVERY && dispatch != Dispatch.PICKUP){

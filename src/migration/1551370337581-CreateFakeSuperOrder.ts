@@ -24,7 +24,7 @@ export class CreateFakeSuperOrder1551370337581 implements MigrationInterface {
 
             superOrder.deadline = faker.date.future();
             superOrder.arrivalLocation = faker.address.city();
-            superOrder.tags = faker.random.words(5);
+            superOrder.tags = faker.random.words(5).split(" ");
             await superOrderRepository.save(superOrder);
         }
     }
