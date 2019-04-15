@@ -50,9 +50,9 @@ export class User {
     @OneToMany(type => SuperOrder, superOrder => superOrder.user)
     superOrders: SuperOrder[];
 
-    @Column()
+    @Column({nullable: true})
     @IsUrl()
-    imageUrl: string; //TODO rerun migrations
+    imageUrl: string;
 
     hashPassword() {
         this.password = bcrypt.hashSync(this.password, 8);
