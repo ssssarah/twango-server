@@ -179,9 +179,8 @@ class SuperOrderController {
                                                                 .take(RESULT_PER_PAGE)
                                                                 .skip((page-1) * RESULT_PER_PAGE);
 
-            queryBuilder.where('"isDeleted" = false'); //POSTGRES
-//            queryBuilder.where("isDeleted = 0"); //MYSQL
-
+            queryBuilder.where("super_order.isDeleted = :isDeleted", {isDeleted: false});
+            
             // {type: "deadline", order:"ASC/DESC"}
             if(isDefined(sortType) && isDefined(sortOrder)){
                 if(sortOrder != "ASC" && sortOrder != "DESC"){
