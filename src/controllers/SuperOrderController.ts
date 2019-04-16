@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {getRepository, SelectQueryBuilder} from "typeorm";
+import {createQueryBuilder, getRepository, SelectQueryBuilder} from "typeorm";
 import {validate} from "class-validator";
 
 import {Dispatch, SuperOrder} from "../entity/SuperOrder";
@@ -54,9 +54,9 @@ class SuperOrderController {
 
     static getMySuperOrders = async (req: Request, res: Response) => {
         const user: User = res.locals.user;
-        const superOrders = getRepository(SuperOrder).createQueryBuilder("superOrder")
+        const superOrders = createQueryBuilder().from(SuperOrder, "superOrder")
             .select(["user.firstName", "user.lastName", "superOrder", "user.id", "user.imageUrl"])
-            .where("super_order.userId = :userId", { userId: user.id })
+            .where("superOrder.userId = :userId", { userId: user.id })
             .leftJoinAndSelect(
                 "superOrder.orders", "order",
                 "order.isDeleted = :isDeleted", { isDeleted: false })
