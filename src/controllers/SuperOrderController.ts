@@ -179,7 +179,7 @@ class SuperOrderController {
                                                                 .take(RESULT_PER_PAGE)
                                                                 .skip((page-1) * RESULT_PER_PAGE);
 
-            queryBuilder.where("isDeleted = 0");
+            queryBuilder.where('"isDeleted" = 0');
 
             // {type: "deadline", order:"ASC/DESC"}
             if(isDefined(sortType) && isDefined(sortOrder)){
