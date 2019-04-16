@@ -56,7 +56,7 @@ class SuperOrderController {
         const user: User = res.locals.user;
         const superOrders = createQueryBuilder().from(SuperOrder, "superOrder")
             .select(["user.firstName", "user.lastName", "superOrder", "user.id", "user.imageUrl"])
-            .where("superOrder.user = :user", { user: user})
+            .where("superOrder.user = :user", { user: user.id})
             .leftJoinAndSelect(
                 "superOrder.orders", "order",
                 "order.isDeleted = :isDeleted", { isDeleted: false })
