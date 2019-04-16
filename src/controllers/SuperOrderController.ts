@@ -54,7 +54,7 @@ class SuperOrderController {
 
     static getMySuperOrders = async (req: Request, res: Response) => {
         const user: User = res.locals.user;
-        const superOrders = await getRepository(SuperOrder).createQueryBuilder("superOrder")
+        const superOrders = getRepository(SuperOrder).createQueryBuilder("superOrder")
             .select(["user.firstName", "user.lastName", "superOrder", "user.id", "user.imageUrl"])
             .where("superOrder.userId = :userId", { userId: user.id })
             .leftJoinAndSelect(
@@ -65,7 +65,7 @@ class SuperOrderController {
 
         console.log(superOrders.getSql());
 
-        res.status(200).send({superOrders: superOrders.getMany()});
+        res.status(200).send({superOrders: await superOrders.getMany()});
     };
 
     static getMyOrdersSuperOrders = async (req: Request, res: Response) => {
