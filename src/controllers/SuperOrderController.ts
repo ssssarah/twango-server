@@ -56,12 +56,13 @@ class SuperOrderController {
         const user: User = res.locals.user;
         const superOrders = getRepository(SuperOrder).createQueryBuilder("superOrder")
             .select(["user.firstName", "user.lastName", "superOrder", "user.id", "user.imageUrl"])
+            .from(SuperOrder, "superOrder")
+            .where("superOrder.userId = :userId", { userId: user.id })
             .leftJoinAndSelect(
                 "superOrder.orders", "order",
                 "order.isDeleted = :isDeleted", { isDeleted: false })
             .leftJoin("order.user", "user")
-            .leftJoinAndSelect("order.orderItems", "orderItems")
-            .where("superOrder.userId = :userId", { userId: user.id });
+            .leftJoinAndSelect("order.orderItems", "orderItems");
 
         console.log(superOrders.getSql());
 
