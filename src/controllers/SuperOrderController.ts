@@ -54,7 +54,7 @@ class SuperOrderController {
 
     static getMySuperOrders = async (req: Request, res: Response) => {
         const user: User = res.locals.user;
-        const superOrders = getRepository(SuperOrder).createQueryBuilder("superOrder")
+        const superOrders = getRepository(SuperOrder).createQueryBuilder()
             .select(["user.firstName", "user.lastName", "superOrder", "user.id", "user.imageUrl"])
             .from(SuperOrder, "superOrder")
             .where("superOrder.userId = :userId", { userId: user.id })
