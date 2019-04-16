@@ -54,10 +54,9 @@ class SuperOrderController {
 
     static getMySuperOrders = async (req: Request, res: Response) => {
         const user: User = res.locals.user;
-        const superOrders = getRepository(SuperOrder).createQueryBuilder()
+        const superOrders = getRepository(SuperOrder).createQueryBuilder("superOrder")
             .select(["user.firstName", "user.lastName", "superOrder", "user.id", "user.imageUrl"])
-            .from(SuperOrder, "superOrder")
-            .where("superOrder.userId = :userId", { userId: user.id })
+            .where("super_order.userId = :userId", { userId: user.id })
             .leftJoinAndSelect(
                 "superOrder.orders", "order",
                 "order.isDeleted = :isDeleted", { isDeleted: false })
