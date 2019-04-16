@@ -1,8 +1,8 @@
 .idea/
+ormconfig.json
 node_modules/
 build/
 tmp/
 temp/
 *.iml
 database.sqlite
-ormconfig.json

@@ -61,10 +61,11 @@ class SuperOrderController {
                 "superOrder.orders", "order",
                 "order.isDeleted = :isDeleted", { isDeleted: false })
             .leftJoin("order.user", "user")
-            .leftJoinAndSelect("order.orderItems", "orderItems")
-            .getMany();
+            .leftJoinAndSelect("order.orderItems", "orderItems");
 
-        res.status(200).send({superOrders: superOrders});
+        console.log(superOrders.getSql());
+
+        res.status(200).send({superOrders: superOrders.getMany()});
     };
 
     static getMyOrdersSuperOrders = async (req: Request, res: Response) => {
