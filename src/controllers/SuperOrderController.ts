@@ -106,7 +106,8 @@ class SuperOrderController {
         superOrder.availableDispatch = availableDispatch;
         superOrder.tags = tags.map(el => el.toLowerCase());
         superOrder.isDeleted = false;
-        superOrder.imageUrl = imageUrl;
+        if(imageUrl != null)
+            superOrder.imageUrl = imageUrl;
         const superOrderRepository = getRepository(SuperOrder);
 
         const errors = await validate(superOrder, { validationError: { target: false }});
