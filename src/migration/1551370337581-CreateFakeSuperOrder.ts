@@ -17,6 +17,7 @@ export class CreateFakeSuperOrder1551370337581 implements MigrationInterface {
             superOrder.storeURL = faker.internet.url();
             superOrder.storeLocation = faker.address.city();
             superOrder.storeName = faker.internet.domainName();
+            superOrder.imageUrl = faker.image.imageUrl(300,300);
 
             let randomDispatch = Math.random();
             superOrder.availableDispatch = randomDispatch > 0.7 ? Dispatch.PICKUP :

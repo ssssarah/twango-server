@@ -94,7 +94,7 @@ class SuperOrderController {
 
         const user: User = res.locals.user;
 
-        let {storeURL, storeLocation, deadline, storeName, arrivalLocation, availableDispatch, tags} = req.body;
+        let {storeURL, storeLocation, deadline, storeName, arrivalLocation, availableDispatch, tags, imageUrl} = req.body;
 
         let superOrder = new SuperOrder();
         superOrder.user = user;
@@ -106,7 +106,7 @@ class SuperOrderController {
         superOrder.availableDispatch = availableDispatch;
         superOrder.tags = tags.map(el => el.toLowerCase());
         superOrder.isDeleted = false;
-
+        superOrder.imageUrl = imageUrl;
         const superOrderRepository = getRepository(SuperOrder);
 
         const errors = await validate(superOrder, { validationError: { target: false }});
@@ -181,7 +181,8 @@ class SuperOrderController {
                                                                 .skip((page-1) * RESULT_PER_PAGE);
 
             queryBuilder.where("super_order.isDeleted = :isDeleted", {isDeleted: false});
-            
+            queryBuilder.andWhere("super_order.deadline > :today", {today: new Date()}); //todo test
+
             // {type: "deadline", order:"ASC/DESC"}
             if(isDefined(sortType) && isDefined(sortOrder)){
                 if(sortOrder != "ASC" && sortOrder != "DESC"){
@@ -221,6 +222,7 @@ class SuperOrderController {
                 queryBuilder.where("super_order.availableDispatch = :dispatch", {dispatch: dispatch});
             }
 
+            console.log(queryBuilder.getSql());
             let superOrders = await queryBuilder.getMany();
             res.send({superOrders: superOrders});
 

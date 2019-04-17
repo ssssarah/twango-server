@@ -33,6 +33,11 @@ export class SuperOrder {
     @RelationId((superOrder: SuperOrder) => superOrder.user)
     userId: number;
 
+
+    @Column({nullable: true})
+    @IsUrl()
+    imageUrl: string;
+
     @IsNotEmpty()
     @IsUrl()
     @Column()
