@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {createQueryBuilder, getRepository, SelectQueryBuilder} from "typeorm";
+import {getRepository, SelectQueryBuilder} from "typeorm";
 import {validate} from "class-validator";
 
 import {Dispatch, SuperOrder} from "../entity/SuperOrder";
@@ -33,16 +33,16 @@ class SuperOrderController {
                 superOrder["orders"] = await qb.select(["order", "user.firstName", "user.lastName", "user.id", "user.imageUrl"])
                     .leftJoin("order.user", "user")
                     .leftJoinAndSelect("order.orderItems", "orderItems")
-                    .where("order.superOrderId = :superOrderId", {superOrderId: superOrder.id})
+                    .where("order.superOrder = :superOrderId", {superOrderId: superOrder.id})
                     .andWhere("order.isDeleted = :isDeleted", {isDeleted: false})
                     .getMany();
 
             }
             else{
                 superOrder["myOrder"] = await qb
-                    .where("order.superOrderId = :superOrderId", {superOrderId: superOrder.id})
+                    .where("order.superOrder = :superOrderId", {superOrderId: superOrder.id})
                     .andWhere("order.isDeleted = :isDeleted", {isDeleted: false})
-                    .andWhere("order.userId = :userId", {userId: user.id})
+                    .andWhere("order.user = :userId", {userId: user.id})
                     .leftJoinAndSelect("order.orderItems", "orderItem")
                     .getOne();
             }
@@ -54,9 +54,9 @@ class SuperOrderController {
 
     static getMySuperOrders = async (req: Request, res: Response) => {
         const user: User = res.locals.user;
-        const superOrders = createQueryBuilder().from(SuperOrder, "superOrder")
+        const superOrders = await getRepository(SuperOrder).createQueryBuilder("superOrder")
             .select(["user.firstName", "user.lastName", "superOrder", "user.id", "user.imageUrl"])
-            .where("superOrder.user = :user", { user: user.id})
+            .where("superOrder.user = :userId", { userId: user.id})
             .leftJoinAndSelect(
                 "superOrder.orders", "order",
                 "order.isDeleted = :isDeleted", { isDeleted: false })
@@ -73,7 +73,7 @@ class SuperOrderController {
 
         const orders: Order[] = await getRepository(Order).createQueryBuilder("order")
             .select(["order", "user.firstName", "user.lastName", "user.id", "user.imageUrl"])
-            .where("order.userId = :userId", { userId: user.id })
+            .where("order.user = :userId", { userId: user.id })
             .andWhere("order.isDeleted = :isDeleted", {isDeleted: false})
             .leftJoinAndSelect("order.orderItems", "orderItem")
             .leftJoinAndSelect("order.superOrder", "superOrder")
