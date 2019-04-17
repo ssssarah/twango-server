@@ -8,7 +8,7 @@ import {
     RelationId,
     CreateDateColumn,
 } from "typeorm";
-import {IsUrl, IsNotEmpty, IsDate, IsEnum, IsDateString, IsArray, IsBoolean} from "class-validator";
+import {IsUrl, IsNotEmpty, IsDate, IsEnum, IsDateString, IsArray, IsBoolean, IsOptional} from "class-validator";
 import {User} from "./User";
 import {Order} from "./Order";
 
@@ -36,6 +36,7 @@ export class SuperOrder {
 
     @Column({nullable: true})
     @IsUrl()
+    @IsOptional()
     imageUrl: string;
 
     @IsNotEmpty()

@@ -6,7 +6,7 @@ import {
     OneToMany,
 } from "typeorm";
 
-import {Length, IsPhoneNumber, IsEmail, IsUrl} from "class-validator";
+import {Length, IsPhoneNumber, IsEmail, IsUrl, IsOptional} from "class-validator";
 import * as bcrypt from "bcryptjs";
 import {Order} from "./Order";
 import {SuperOrder} from "./SuperOrder";
@@ -52,6 +52,7 @@ export class User {
 
     @Column({nullable: true})
     @IsUrl()
+    @IsOptional()
     imageUrl: string;
 
     hashPassword() {

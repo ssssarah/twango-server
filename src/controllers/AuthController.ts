@@ -77,7 +77,7 @@ class AuthController {
 
 
   static register = async (req: Request, res: Response) => {
-    let {username, password, firstName, lastName, mail, location, phone} = req.body;
+    let {username, password, firstName, lastName, mail, location, phone, imageUrl} = req.body;
     let user = new User();
     user.username = username;
     user.password = password;
@@ -86,6 +86,7 @@ class AuthController {
     user.mail = mail;
     user.location = location;
     user.phone = phone;
+    user.imageUrl = imageUrl;
 
     const errors = await validate(user, { validationError: { target: false }});
     if (errors.length > 0) {
