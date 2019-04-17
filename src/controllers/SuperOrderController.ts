@@ -195,7 +195,7 @@ class SuperOrderController {
                     return;
                 }
 
-                queryBuilder.orderBy(sortType, sortOrder);
+                queryBuilder.orderBy("super_order." + sortType, sortOrder);
             }
 
             if(isDefined(tags)){
