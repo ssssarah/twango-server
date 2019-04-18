@@ -47,6 +47,8 @@ class UserController {
         user.phone = phone || user.phone;
         user.imageUrl = imageUrl || user.imageUrl;
 
+        console.log("image url is " + imageUrl);
+
         const errors = await validate(user, { validationError: { target: false }});
 
         if (errors.length > 0) {
