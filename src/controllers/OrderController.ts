@@ -66,7 +66,7 @@ class OrderController {
         }
 
         const orderRepository = getRepository(Order);
-        const errors = await validate(order);
+        const errors = await validate(order, { validationError: { target: false }});
 
         if (errors.length > 0) {
             res.status(400).json(errors);
