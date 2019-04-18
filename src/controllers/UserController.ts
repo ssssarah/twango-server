@@ -27,7 +27,7 @@ class UserController {
 
     static editUser = async (req: Request, res: Response) => {
         const id = req.params.id;
-        const {username, firstName, lastName, mail, location, phone} = req.body; //todo send everything or only modified fields?
+        const {username, firstName, lastName, mail, location, phone, imageUrl} = req.body;
 
         const userRepository = getRepository(User);
 
@@ -39,14 +39,15 @@ class UserController {
             return;
         }
 
-        user.username = username;
-        user.firstName = firstName;
-        user.lastName = lastName;
-        user.mail = mail;
-        user.location = location;
-        user.phone = phone;
+        user.username = username || user.username;
+        user.firstName = firstName || user.firstName;
+        user.lastName = lastName || user.lastName;
+        user.mail = mail || user.mail;
+        user.location = location || user.location;
+        user.phone = phone || user.phone;
+        user.imageUrl = imageUrl || user.imageUrl;
 
-        const errors = await validate(user);
+        const errors = await validate(user, { validationError: { target: false }});
 
         if (errors.length > 0) {
             res.status(400).send(errors);
@@ -56,11 +57,10 @@ class UserController {
         try {
             await userRepository.save(user);
         } catch (e) {
-            res.status(409).send("username already in use");
+            res.status(409).send({error: "username already in use"});
             return;
         }
 
-        //After all send a 204 (no content, but accepted) response
         res.status(204).send();
     };
 
