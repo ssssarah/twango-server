@@ -180,6 +180,7 @@ class SuperOrderController {
                                                                 .take(RESULT_PER_PAGE)
                                                                 .skip((page-1) * RESULT_PER_PAGE);
 
+            queryBuilder.select(["super_order", "user.firstName", "user.lastName", "user.id", "user.imageUrl"]);
             queryBuilder.where("super_order.isDeleted = :isDeleted", {isDeleted: false});
             queryBuilder.andWhere("super_order.deadline > :today", {today: new Date()}); //todo test
 
@@ -221,6 +222,8 @@ class SuperOrderController {
                 }
                 queryBuilder.where("super_order.availableDispatch = :dispatch", {dispatch: dispatch});
             }
+
+            queryBuilder.leftJoin("super_order.user", "user");
 
             console.log(queryBuilder.getSql());
             let superOrders = await queryBuilder.getMany();
