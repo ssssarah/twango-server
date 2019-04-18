@@ -53,6 +53,7 @@ class OrderController {
 
         order.dispatch = dispatch;
         order.status = Status.PENDING;
+        order.isDeleted = false;
 
         order.orderItems = [];
 
