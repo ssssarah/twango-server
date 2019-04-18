@@ -61,7 +61,7 @@ class UserController {
             return;
         }
 
-        res.status(204).send();
+        res.status(200).send({});
     };
 
 }
