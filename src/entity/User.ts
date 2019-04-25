@@ -6,10 +6,11 @@ import {
     OneToMany,
 } from "typeorm";
 
-import {Length, IsPhoneNumber, IsEmail, IsUrl, IsOptional, IsNotEmpty} from "class-validator";
+import {Length, IsPhoneNumber, IsEmail, IsUrl, IsOptional, IsNotEmpty, Validate} from "class-validator";
 import * as bcrypt from "bcryptjs";
 import {Order} from "./Order";
 import {SuperOrder} from "./SuperOrder";
+import {UniqueField} from "../UniqueField";
 
 @Entity()
 //@Unique(["username", "mail"])
@@ -20,6 +21,7 @@ export class User {
     @Column({unique: true})
     @Length(4, 20)
     @IsNotEmpty()
+    @Validate(UniqueField, [User, "username"])
     username: string;
 
     @Column()
@@ -34,7 +36,8 @@ export class User {
 
     @Column({unique: true})
     @IsNotEmpty()
-        //@IsEmail() TODO maybe fix, doesn't seem to work
+    @Validate(UniqueField, [User, "mail"])
+    //@IsEmail() TODO maybe fix, doesn't seem to work
     mail: string;
 
     @Column()
