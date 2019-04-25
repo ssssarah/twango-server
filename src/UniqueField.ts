@@ -8,15 +8,15 @@ export class UniqueField implements ValidatorConstraintInterface {
 
     validate(value: any, args: ValidationArguments) {
         let obj = {};
-        let entity = args[0];
-        obj[args[1]] = value;
+        let entity = args.constraints[0];
+        obj[args.constraints[1]] = value;
         return getRepository(entity).findOne(obj).then(entity => {
             return !entity;
         });
     }
 
     defaultMessage(args: ValidationArguments) {
-        return "Duplicate " + args[1];
+        return "Duplicate " + args.constraints[1];
     }
 
 }
