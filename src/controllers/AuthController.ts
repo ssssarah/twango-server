@@ -25,15 +25,13 @@ class AuthController {
     try {
       user = await userRepository.findOneOrFail({ where: { username } });
     } catch (error) {
-      console.log("couldn't find user with that username/password combo");
-      res.status(401).send();
+      res.status(400).send({error: "No user with that username"});
       return;
     }
 
     //Check if encrypted password match
     if (!user.checkIfUnencryptedPasswordIsValid(password)) {
-      res.status(401).send();
-      console.log("password invalid");
+      res.status(400).send({error: "Invalid password"});
       return;
     }
 
