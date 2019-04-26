@@ -25,9 +25,8 @@ export class SuperOrder {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @IsNotEmpty()
     @JoinColumn()
-    @ManyToOne(type => User, user => user.superOrders)
+    @ManyToOne(type => User, user => user.superOrders, {nullable:false})
     user : User;
 
     @RelationId((superOrder: SuperOrder) => superOrder.user)
@@ -49,7 +48,7 @@ export class SuperOrder {
     storeLocation: string;
 
     @IsNotEmpty()
-    @IsDateString()
+    @IsDate()
     @Column()
     deadline: Date;
 

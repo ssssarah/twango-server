@@ -34,7 +34,12 @@ class OrderController {
             superOrder = await getRepository(SuperOrder).findOneOrFail(superOrderId);
         }
         catch(err) {
-            res.status(401).send({error: "SuperOrder not found"});
+            res.status(404).send({error: "SuperOrder not found"});
+            return;
+        }
+
+        if(await getRepository(Order).findOne({superOrder: superOrder, user: user}) != null) {
+            res.status(400).send({error: "You already created an order for this superOrder"});
             return;
         }
 

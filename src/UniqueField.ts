@@ -8,27 +8,12 @@ export class UniqueField implements ValidatorConstraintInterface {
 
     validate(value: any, args: ValidationArguments) {
         let obj = {};
-        let entity = args.constraints[0];
         obj[args.constraints[1]] = value;
-        return getRepository(entity).findOne(obj).then(entity => {
-            return !entity;
-        });
+        return getRepository(args.constraints[0]).findOne(obj).then(entity => !entity);
     }
 
     defaultMessage(args: ValidationArguments) {
         return "Duplicate " + args.constraints[1];
     }
 
-}
-
-export function IsUsernameAlreadyExist(validationOptions?: ValidationOptions) {
-    return function (object: Object, propertyName: string) {
-        registerDecorator({
-            target: object.constructor,
-            propertyName: propertyName,
-            options: validationOptions,
-            constraints: [],
-            validator: UniqueField
-        });
-    };
 }

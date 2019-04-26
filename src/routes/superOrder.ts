@@ -17,8 +17,12 @@ router.post(
     SuperOrderController.newSuperOrder
 );
 
-//Edit one superOrder
-//router.put("/:id([0-9]+)", [checkJwtMandatory], SuperOrderController.editSuperOrder);
+//Edit superOrder's img
+router.put(
+    "/:id([0-9]+)/image",
+    [checkJwtMandatory],
+    SuperOrderController.editImage
+);
 
 //Delete one user
 router.delete(

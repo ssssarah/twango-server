@@ -12,17 +12,16 @@ export enum Status {
 
 @Entity('orderr')
 export class Order {
+
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@IsNotEmpty()
 	@JoinColumn()
-	@ManyToOne(type => SuperOrder, superOrder => superOrder.orders)
+	@ManyToOne(type => SuperOrder, superOrder => superOrder.orders, {nullable: false})
 	superOrder: SuperOrder;
 
-	@IsNotEmpty()
 	@JoinColumn()
-	@ManyToOne(type => User, user => user.orders)
+	@ManyToOne(type => User, user => user.orders, {nullable: false})
 	user: User;
 
 	@RelationId((order: Order) => order.user)

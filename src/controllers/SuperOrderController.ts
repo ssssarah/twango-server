@@ -100,7 +100,7 @@ class SuperOrderController {
         superOrder.user = user;
         superOrder.storeURL = storeURL;
         superOrder.storeLocation = storeLocation;
-        superOrder.deadline = deadline;
+        superOrder.deadline = new Date(deadline);
         superOrder.storeName = storeName;
         superOrder.arrivalLocation = arrivalLocation;
         superOrder.availableDispatch = availableDispatch;
@@ -280,6 +280,46 @@ class SuperOrderController {
 
         res.status(200).send({superOrder: superOrder});
     };*/
+
+    static editImage = async (req: Request, res: Response) => {
+        let {imageUrl} = req.body;
+        let id = req.params.id;
+
+        const superOrderRepository = getRepository(SuperOrder);
+
+        let superOrder: SuperOrder;
+
+        try {
+            superOrder = await superOrderRepository.findOneOrFail({id: id, isDeleted: false});
+        } catch (error) {
+            res.status(404).send({error: "SuperOrder not found"});
+            return;
+        }
+
+        let user : User = res.locals.user;
+        if(superOrder.userId != user.id){
+            res.status(401).send();
+            return;
+        }
+
+        superOrder.imageUrl = imageUrl;
+
+        const errors = await validate(superOrder, { validationError: { target: false }});
+        if (errors.length > 0) {
+            res.status(400).send(errors);
+            return;
+        }
+
+        try {
+            await superOrderRepository.save(superOrder);
+        } catch (e) {
+            res.status(409).send({error: "Couldn't save superOrder"});
+            return;
+        }
+
+        res.status(200).send({superOrder: superOrder});
+
+    }
 
 }
 
