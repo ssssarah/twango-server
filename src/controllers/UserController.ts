@@ -26,18 +26,8 @@ class UserController {
     };
 
     static editUser = async (req: Request, res: Response) => {
-        const id = req.params.id;
+        const user: User = res.locals.user;
         const {username, firstName, lastName, mail, location, phone, imageUrl} = req.body;
-
-        const userRepository = getRepository(User);
-
-        let user;
-        try {
-            user = await userRepository.findOneOrFail(id);
-        } catch (error) {
-            res.status(404).send("User not found");
-            return;
-        }
 
         user.username = username || user.username;
         user.firstName = firstName || user.firstName;
@@ -57,13 +47,14 @@ class UserController {
         }
 
         try {
-            await userRepository.save(user);
+            await getRepository(User).save(user);
         } catch (e) {
-            res.status(409).send({error: "username already in use"});
+            res.status(409).send({error: e.message});
             return;
         }
 
-        res.status(200).send({});
+        delete user.password;
+        res.status(200).send({profile: user});
     };
 
 }
