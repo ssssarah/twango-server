@@ -104,7 +104,7 @@ class SuperOrderController {
         superOrder.storeName = storeName;
         superOrder.arrivalLocation = arrivalLocation;
         superOrder.availableDispatch = availableDispatch;
-        superOrder.tags = tags != null ? tags.map(el => el.toLowerCase()) : [];
+        superOrder.tags = isDefined(tags) ? tags.map(el => el.toLowerCase()) : [];
         superOrder.isDeleted = false;
         superOrder.imageUrl = imageUrl;
         const superOrderRepository = getRepository(SuperOrder);
