@@ -10,20 +10,6 @@ import {OrderItem} from "../entity/OrderItem";
 
 class OrderController {
 
-
-    static getOrder = async (req: Request, res: Response) => {
-        /*const id: number = req.params.id;
-        const OrderRepository = getRepository(Order);
-
-        try {
-            const Order = await OrderRepository.findOneOrFail(id, {select: ["id"]});
-            res.send(Order);
-        } catch (error) {
-            res.status(404).send("Order not found");
-        }*/
-
-    };
-
     static newOrder = async (req: Request, res: Response) => {
 
         const user: User = res.locals.user;

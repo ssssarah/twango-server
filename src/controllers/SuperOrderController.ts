@@ -13,7 +13,7 @@ class SuperOrderController {
         const id: number = req.params.id;
         const user: User = res.locals.user;
         let superOrder: SuperOrder = await getRepository(SuperOrder).createQueryBuilder("superOrder")
-            .select(["superOrder", "user.firstName", "user.lastName", "user.id", "user.imageUrl"])
+            .select(["superOrder", "user.username", "user.firstName", "user.lastName", "user.id", "user.imageUrl"])
             .leftJoin("superOrder.user", "user")
             .where("superOrder.id = :id", {id: id})
             .andWhere("superOrder.isDeleted = :isDeleted", {isDeleted: false})
@@ -284,6 +284,11 @@ class SuperOrderController {
     static editImage = async (req: Request, res: Response) => {
         let {imageUrl} = req.body;
         let id = req.params.id;
+
+        if(!isDefined(imageUrl)){
+            res.status(400).send({error: "imageUrl missing"});
+            return;
+        }
 
         const superOrderRepository = getRepository(SuperOrder);
 
