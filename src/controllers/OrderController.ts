@@ -38,7 +38,7 @@ class OrderController {
             (superOrder.availableDispatch == Dispatch.DELIVERY && dispatch != Dispatch.DELIVERY) ||
             (superOrder.availableDispatch == Dispatch.PICKUP && dispatch != Dispatch.PICKUP)
         ){
-            res.status(401).send({error: "Invalid dispatch"});
+            res.status(400).send({error: "Invalid dispatch"});
             return;
         }
 
@@ -74,25 +74,6 @@ class OrderController {
         }
         res.status(201).send({"order":order});
 
-    };
-
-    static editOrder = async (req: Request, res: Response) => {
-        /*let {stuff} = req.body; //TODO define if it can be done??
-
-        let id = req.params.id;
-
-        const OrderRepository = getRepository(Order);
-
-        let order: Order;
-
-        try {
-            order = await OrderRepository.findOneOrFail(id);
-        } catch (error) {
-            res.status(404).send("Order not found");
-            return;
-        }
-
-        */
     };
 
     static deleteOrder = async (req: Request, res: Response) => {
