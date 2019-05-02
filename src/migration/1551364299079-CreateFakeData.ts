@@ -11,7 +11,7 @@ export class CreateFakeData1551364299079 implements MigrationInterface {
 	    const userRepository = getRepository(User);
         for(let i = 0; i < 50; ++i){
             let user : User = new User();
-            user.username = i == 0 ? "test" : faker.internet.userName();
+            user.username = i == 0 ? "test" : (i == 1 ? "test2" : faker.internet.userName());
             user.password = "password";
             user.firstName = faker.name.firstName();
             user.lastName = faker.name.lastName();

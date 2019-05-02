@@ -12,7 +12,7 @@ export class CreateFakeSuperOrder1551370337581 implements MigrationInterface {
 
         for(let key in allUsers){
             let user = allUsers[key];
-            let nb = user.username === "test" ? 10 : 1;
+            let nb = (user.username === "test" || user.username === "test2") ? 10 : 1;
 
             for(let i = 0; i < nb; ++i){
 
