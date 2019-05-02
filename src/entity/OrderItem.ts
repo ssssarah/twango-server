@@ -13,7 +13,7 @@ export class OrderItem {
     @JoinColumn()
     order: Order;
 
-    @Column()
+    @Column({nullable: true})
     additionalInfo: string;
 
     @Column()
