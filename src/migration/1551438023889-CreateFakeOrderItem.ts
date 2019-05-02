@@ -17,7 +17,7 @@ export class CreateFakeOrderItem1551438023889 implements MigrationInterface {
             console.log("orderItem for order " + order.id);
 
             for(let i = 0; i < 4; ++i){
-                let orderItem = new OrderItem();
+                let orderItem = new OrderItem(); 
                 orderItem.order = order;
                 orderItem.quantity = this.rand(1, 10);
                 orderItem.additionalInfo = "blah blah blah";
