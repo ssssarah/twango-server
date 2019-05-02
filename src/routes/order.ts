@@ -11,12 +11,6 @@ router.post(
     OrderController.newOrder
 );
 
-//Edit one Order
-router.put(
-    "/:id([0-9]+)",
-    [checkJwtMandatory],
-    OrderController.editOrder
-);
 
 //Delete one user
 router.delete(
