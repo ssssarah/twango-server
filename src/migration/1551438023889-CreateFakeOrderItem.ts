@@ -1,6 +1,7 @@
 import {getRepository, MigrationInterface, QueryRunner} from "typeorm";
 import {OrderItem} from "../entity/OrderItem";
 import {Order} from "../entity/Order";
+import * as faker from "faker";
 
 export class CreateFakeOrderItem1551438023889 implements MigrationInterface {
 
@@ -20,6 +21,7 @@ export class CreateFakeOrderItem1551438023889 implements MigrationInterface {
                 orderItem.order = order;
                 orderItem.quantity = this.rand(1, 10);
                 orderItem.additionalInfo = "blah blah blah";
+                orderItem.url = faker.internet.url();
                 await orderItemRepository.save(orderItem);
             }
         }

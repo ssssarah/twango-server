@@ -53,6 +53,7 @@ class OrderController {
             let orderItem = new OrderItem();
             orderItem.additionalInfo = item.additionalInfo;
             orderItem.quantity = item.quantity;
+            orderItem.url = item.url;
             order.orderItems.push(orderItem);
         }
 

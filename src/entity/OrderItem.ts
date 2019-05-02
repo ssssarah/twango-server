@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn} from "typeorm";
-import {IsNotEmpty, IsInt} from "class-validator";
+import {IsNotEmpty, IsInt, IsUrl} from "class-validator";
 import {Order} from "./Order";
 
 @Entity()
@@ -15,6 +15,11 @@ export class OrderItem {
 
     @Column()
     additionalInfo: string;
+
+    @Column()
+    @IsNotEmpty()
+    @IsUrl()
+    url: string;
 
     @IsNotEmpty()
     @IsInt()
