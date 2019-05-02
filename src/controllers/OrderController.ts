@@ -24,7 +24,7 @@ class OrderController {
             return;
         }
 
-        if(await getRepository(Order).findOne({superOrder: superOrder, user: user}) != null) {
+        if(await getRepository(Order).findOne({superOrder: superOrder, user: user, isDeleted: false}) != null) {
             res.status(400).send({error: "You already created an order for this superOrder"});
             return;
         }
