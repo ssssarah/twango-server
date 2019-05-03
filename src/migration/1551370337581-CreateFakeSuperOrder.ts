@@ -31,7 +31,7 @@ export class CreateFakeSuperOrder1551370337581 implements MigrationInterface {
                 superOrder.deadline = faker.date.future();
                 superOrder.arrivalLocation = faker.address.city();
                 superOrder.tags = faker.random.words(5).split(" ");
-
+                superOrder.isDeleted = false;
                 const errors = await validate(superOrder, { validationError: { target: false }});
 
                 if (errors.length == 0) {
