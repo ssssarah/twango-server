@@ -31,6 +31,7 @@ export class CreateFakeOrder1551370519438 implements MigrationInterface {
 
                 previousIds.push(order.user.id);
 
+                order.isDeleted = false;
 
                 const errors = await validate(order, { validationError: { target: false }});
 
