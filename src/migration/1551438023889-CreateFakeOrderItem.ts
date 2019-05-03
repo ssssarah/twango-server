@@ -30,6 +30,10 @@ export class CreateFakeOrderItem1551438023889 implements MigrationInterface {
                 if (errors.length == 0) {
                     await orderItemRepository.save(orderItem);
                 }
+
+                else{
+                    console.log(JSON.stringify(errors));
+                }
             }
         }
 

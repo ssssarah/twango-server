@@ -37,6 +37,9 @@ export class CreateFakeOrder1551370519438 implements MigrationInterface {
                 if (errors.length == 0) {
                     await orderRepository.save(order);
                 }
+                else{
+                    console.log(JSON.stringify(errors));
+                }
             }
 
         }

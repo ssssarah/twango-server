@@ -28,6 +28,10 @@ export class CreateFakeData1551364299079 implements MigrationInterface {
                 await userRepository.save(user);
             }
 
+            else{
+                console.log(JSON.stringify(errors));
+            }
+
 		}
 
 

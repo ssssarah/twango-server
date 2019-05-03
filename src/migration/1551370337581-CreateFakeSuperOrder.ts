@@ -38,6 +38,10 @@ export class CreateFakeSuperOrder1551370337581 implements MigrationInterface {
                     await superOrderRepository.save(superOrder);
                 }
 
+                else{
+                    console.log(JSON.stringify(errors));
+                }
+
 
             }
 
