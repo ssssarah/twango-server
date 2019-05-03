@@ -2,6 +2,7 @@ import {MigrationInterface, QueryRunner} from "typeorm";
 import {User} from "../entity/User";
 import {Dispatch, SuperOrder} from "../entity/SuperOrder";
 import {getRepository } from "typeorm";
+import {validate} from "class-validator";
 const faker = require('faker');
 
 export class CreateFakeData1551364299079 implements MigrationInterface {
@@ -20,7 +21,13 @@ export class CreateFakeData1551364299079 implements MigrationInterface {
             user.location = faker.address.city();
             user.imageUrl = faker.image.imageUrl(300,300);
             user.hashPassword();
-            await userRepository.save(user);
+
+            const errors = await validate(user, { validationError: { target: false }});
+
+            if (errors.length == 0) {
+                await userRepository.save(user);
+            }
+
 		}
 
 

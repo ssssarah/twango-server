@@ -2,6 +2,7 @@ import {getRepository, In, MigrationInterface, Not, QueryRunner} from "typeorm";
 import {Order, Status} from "../entity/Order";
 import {Dispatch, SuperOrder} from "../entity/SuperOrder";
 import {User} from "../entity/User";
+import {validate} from "class-validator";
 
 export class CreateFakeOrder1551370519438 implements MigrationInterface {
 
@@ -30,7 +31,12 @@ export class CreateFakeOrder1551370519438 implements MigrationInterface {
 
                 previousIds.push(order.user.id);
 
-                await orderRepository.save(order);
+
+                const errors = await validate(order, { validationError: { target: false }});
+
+                if (errors.length == 0) {
+                    await orderRepository.save(order);
+                }
             }
 
         }

@@ -1,6 +1,7 @@
 import {getRepository, MigrationInterface, QueryRunner} from "typeorm";
 import {Dispatch, SuperOrder} from "../entity/SuperOrder";
 import {User} from "../entity/User";
+import {validate} from "class-validator";
 const faker = require('faker');
 
 export class CreateFakeSuperOrder1551370337581 implements MigrationInterface {
@@ -30,7 +31,14 @@ export class CreateFakeSuperOrder1551370337581 implements MigrationInterface {
                 superOrder.deadline = faker.date.future();
                 superOrder.arrivalLocation = faker.address.city();
                 superOrder.tags = faker.random.words(5).split(" ");
-                await superOrderRepository.save(superOrder);
+
+                const errors = await validate(superOrder, { validationError: { target: false }});
+
+                if (errors.length == 0) {
+                    await superOrderRepository.save(superOrder);
+                }
+
+
             }
 
         }

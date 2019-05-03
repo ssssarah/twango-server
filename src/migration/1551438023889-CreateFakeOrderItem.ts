@@ -2,6 +2,7 @@ import {getRepository, MigrationInterface, QueryRunner} from "typeorm";
 import {OrderItem} from "../entity/OrderItem";
 import {Order} from "../entity/Order";
 import * as faker from "faker";
+import {validate} from "class-validator";
 
 export class CreateFakeOrderItem1551438023889 implements MigrationInterface {
 
@@ -23,6 +24,12 @@ export class CreateFakeOrderItem1551438023889 implements MigrationInterface {
                 orderItem.additionalInfo = "blah blah blah";
                 orderItem.url = faker.internet.url();
                 await orderItemRepository.save(orderItem);
+
+                const errors = await validate(orderItem, { validationError: { target: false }});
+
+                if (errors.length == 0) {
+                    await orderItemRepository.save(orderItem);
+                }
             }
         }
 
